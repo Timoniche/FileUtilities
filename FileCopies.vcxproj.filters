@@ -47,97 +47,143 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="binary_tree.cpp">
+    <ClCompile Include="substring_window\Boyer_Moore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="copies_finder.cpp">
+    <ClCompile Include="copies_window\binary_tree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="copies_window\copies_finder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="copies_window\dumpInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="substring_window\file_trigram_finder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="substring_window\filtersDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mainwindow.cpp">
+    <ClCompile Include="copies_window\mainwindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dumpInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="welcome.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mainwindow2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Boyer_Moore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="trigram.cpp">
+    <ClCompile Include="substring_window\mainwindow2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="my_functions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="substring_finder.cpp">
+    <ClCompile Include="substring_window\substring_finder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="file_trigram_finder.cpp">
+    <ClCompile Include="substring_window\trigram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="filtersDialog.cpp">
+    <ClCompile Include="welcome.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="binary_tree.h">
+    <ClInclude Include="substring_window\Boyer_Moore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <QtMoc Include="copies_finder.h">
+    <ClInclude Include="copies_window\binary_tree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="copies_window\copies_finder.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="mainwindow.h">
+    <QtMoc Include="copies_window\dumpInfo.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="substring_window\file_trigram_finder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <QtMoc Include="substring_window\filtersDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="copies_window\mainwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="substring_window\mainwindow2.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <ClInclude Include="my_functions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Boyer_Moore.h">
+    <QtMoc Include="substring_window\substring_finder.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClInclude Include="substring_window\trigram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="trigram.h">
+    <QtMoc Include="welcome.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="file_trigram_finder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <CustomBuild Include="debug\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="release\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
+    
+    
+    
+    
+    
+    
+    <ClInclude Include="ui_DialogButtonBottom.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_MainWindow1.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_dumpInfo.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_filtersDialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
     <ClInclude Include="ui_mainwindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_welcome.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="mainwindow.ui">
+    <QtUic Include="copies_window\DialogButtonBottom.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <QtUic Include="dumpInfo.ui">
+    <QtUic Include="substring_window\MainWindow1.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="copies_window\dumpInfo.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="substring_window\filtersDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="copies_window\mainwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="welcome.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="MainWindow1.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-    <QtUic Include="filtersDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -148,26 +194,5 @@
     <QtRcc Include="resources.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <None Include="cpp.hint" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="FileCopies1.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="dumpInfo.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="welcome.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="mainwindow2.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="substring_finder.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="filtersDialog.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
   </ItemGroup>
 </Project>

@@ -27,18 +27,40 @@ CONFIG += c++17
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-        binary_tree.cpp \
-        copies_finder.cpp
+        copies_window/mainwindow.cpp \
+        my_functions.cpp \
+        copies_window/binary_tree.cpp \
+        copies_window/copies_finder.cpp \
+        copies_window/dumpInfo.cpp \
+        substring_window/Boyer_Moore.cpp \
+        substring_window/file_trigram_finder.cpp \
+        substring_window/filtersDialog.cpp \
+        substring_window/substring_finder.cpp \
+        substring_window/trigram.cpp \
+        welcome.cpp \
+        substring_window/mainwindow2.cpp \
 
 HEADERS += \
-        mainwindow.h \
+        copies_window/mainwindow.h \
         my_functions.h \
-        binary_tree.h \
-        copies_finder.h \
+        copies_window/binary_tree.h \
+        copies_window/copies_finder.h \
+        copies_window/dumpInfo.h \
+        substring_window/Boyer_Moore.h \
+        substring_window/file_trigram_finder.h \
+        substring_window/filtersDialog.h \
+        substring_window/substring_finder.h \
+        substring_window/trigram.h \
+        welcome.h \
+        substring_window/mainwindow2.h
 
 FORMS += \
-        mainwindow.ui
+        copies_window/mainwindow.ui \
+        copies_window/dumpInfo.ui \
+        copies_window/DialogButtonBottom.ui \
+        substring_window/filtersDialog.ui \
+        welcome.ui \
+        substring_window/MainWindow1.ui 
 
 RESOURCES += \
     resources.qrc

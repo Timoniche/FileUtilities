@@ -1,6 +1,6 @@
 #include "welcome.h"
 #include "ui_welcome.h"
-#include "substring_window/ui_MainWindow1.h"
+#include "ui_MainWindow1.h"
 
 #include "substring_window/mainwindow2.h"
 #include "copies_window/mainwindow.h"
