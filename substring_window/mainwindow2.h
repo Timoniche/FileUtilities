@@ -4,7 +4,7 @@
 #include "my_functions.h"
 #include "trigram.h"
 
-#include "dumpInfo.h"
+#include "copies_window/dumpInfo.h"
 #include "filtersDialog.h"
 #include "substring_finder.h"
 

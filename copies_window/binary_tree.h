@@ -3,6 +3,7 @@
 
 
 #include <vector>
+
 #include "copies_finder.h"
 
 #include <fstream>

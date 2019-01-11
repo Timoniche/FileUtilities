@@ -21,36 +21,36 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 add_executable(FileCopies
         main.cpp
-        mainwindow.h
-        mainwindow.cpp
-        mainwindow.ui
+        copies_window/mainwindow.h
+        copies_window/mainwindow.cpp
+        copies_window/mainwindow.ui
         my_functions.h
         my_functions.cpp
-        binary_tree.cpp
-        binary_tree.h
-        copies_finder.cpp
-        copies_finder.h
-        dumpInfo.cpp
-        dumpInfo.h
-        dumpInfo.ui
-        Boyer_Moore.h
-        Boyer_Moore.cpp
-        DialogButtonBottom.ui
-        file_trigram_finder.h
-        file_trigram_finder.cpp
-        filtersDialog.ui
-        filtersDialog.h
-        filtersDialog.cpp
-        substring_finder.h
-        substring_finder.cpp
-        trigram.h
-        trigram.cpp
+        copies_window/binary_tree.cpp
+        copies_window/binary_tree.h
+        copies_window/copies_finder.cpp
+        copies_window/copies_finder.h
+        copies_window/dumpInfo.cpp
+        copies_window/dumpInfo.h
+        copies_window/dumpInfo.ui
+        substring_window/Boyer_Moore.h
+        substring_window/Boyer_Moore.cpp
+        copies_window/DialogButtonBottom.ui
+        substring_window/file_trigram_finder.h
+        substring_window/file_trigram_finder.cpp
+        substring_window/filtersDialog.ui
+        substring_window/filtersDialog.h
+        substring_window/filtersDialog.cpp
+        substring_window/substring_finder.h
+        substring_window/substring_finder.cpp
+        substring_window/trigram.h
+        substring_window/trigram.cpp
         welcome.ui
         welcome.h
         welcome.cpp
-        MainWindow1.ui
-        mainwindow2.cpp
-        mainwindow2.h
+        substring_window/MainWindow1.ui
+        substring_window/mainwindow2.cpp
+        substring_window/mainwindow2.h
         resources.qrc
         )
 
