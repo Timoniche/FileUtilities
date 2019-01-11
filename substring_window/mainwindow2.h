@@ -50,10 +50,12 @@ private slots:
 
 	//____________________
 	void changed(const QString& flName);
+	void pattern_updated(const QString &);
 
 private:
 	clock_t _timeIn;
 	QStringList _filters;
+	bool _isRunning = false;
 
 	std::set<FilesTrigram, FilesTrigram::cmp> _filesTrigrams;
 	std::unique_ptr<Ui::MainWindow1> ui;

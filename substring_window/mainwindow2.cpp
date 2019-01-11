@@ -42,9 +42,11 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	//write which thread
 	connect(ui->pauseButton, &QPushButton::clicked, this, &subStringFinder::pause_thread);
 	connect(ui->continueButton, &QPushButton::clicked, this, &subStringFinder::restart_thread);
-	connect(ui->stopButton, &QPushButton::clicked, this, &subStringFinder::restart_thread);
+	connect(ui->stopButton, &QPushButton::clicked, this, &subStringFinder::interrupt_thread);
 
 	connect(ui->actionchoose_filters, &QAction::triggered, this, &subStringFinder::show_filters);
+
+	connect(ui->lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(pattern_updated(const QString &)));
 
 	qRegisterMetaType<MyArray2>("MyArray2");
 	qRegisterMetaType<std::string>("std::string");
@@ -53,6 +55,11 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	fsWatcher = new QFileSystemWatcher(this);
 	connect(fsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
 	show_filters();
+}
+
+void subStringFinder::pattern_updated(const QString&) {
+	interrupt_thread();
+	search();
 }
 
 void subStringFinder::changed(const QString& flName) {
@@ -88,7 +95,10 @@ void subStringFinder::show_filters() {
 }
 
 void subStringFinder::interrupt_thread() {
-	thread->requestInterruption();
+	if (thread != nullptr && _isRunning) {
+		thread->requestInterruption();
+	}
+	_isRunning = false;
 }
 
 void subStringFinder::update_bar(int val) {
@@ -96,7 +106,7 @@ void subStringFinder::update_bar(int val) {
 }
 
 void subStringFinder::scan_has_finished() {
-
+	_isRunning = false;
 	//ui->selectButton->setEnabled(true);
 	ui->stopButton->setEnabled(false);
 
@@ -218,7 +228,7 @@ void subStringFinder::add_dir() {
 			fsWatcher->addPath(cur_path);
 		}
 		catch (std::exception& ex) {
-			//to error window
+			error(ex.what());
 		}
 	}
 	size_t cur_size = _filesTrigrams.size();
@@ -238,7 +248,7 @@ void subStringFinder::add_path() {
 	try {
 		_filesTrigrams.emplace(path.toStdString());
 	} catch (std::exception& ex) {
-		//to error window
+		error(ex.what());
 	}
 	size_t cur_size = _filesTrigrams.size();
 	if (cur_size == last_size) {
@@ -254,7 +264,7 @@ void subStringFinder::add_path() {
 void subStringFinder::search() {
 	ui->statusBar->showMessage(tr("Searching substring..."));
 	ui->progressBar->setValue(0);
-	ui->progressBar->setMaximum(_filesTrigrams.size());
+	ui->progressBar->setMaximum(static_cast<int>(_filesTrigrams.size()));
 	ui->treeWidget->clear();
 
 	ui->pauseButton->setEnabled(true);
@@ -274,6 +284,7 @@ void subStringFinder::search() {
 	thread = new QThread;
 	worker = new substring_finder();
 	worker->moveToThread(thread);
+	_isRunning = true;
 	
 	connect(this, &subStringFinder::start_substring_finder, worker, &substring_finder::process);
 	//connect(thread, SIGNAL(started()), worker, SLOT(process()));
