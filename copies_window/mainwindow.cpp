@@ -91,6 +91,7 @@ main_window::main_window(QWidget *parent) :
     connect(ui->buttonStop, &QPushButton::clicked, this, &main_window::interrupt_thread);
     connect(ui->pauseButton, &QPushButton::clicked, this, &main_window::pause_thread);
 
+
 	ui->buttonStop->setEnabled(false);
 	ui->pauseButton->setEnabled(false);
 	ui->continueButton->setEnabled(false);
@@ -225,6 +226,8 @@ void main_window::interrupt_thread() {
 void main_window::find_copies(QString const &dir) {
 
 	_free_space = 0;
+
+	ui->treeWidget->clear();
 
 	_isRunning = true;
     ui->statusBar->showMessage(tr("Searching for copies..."));

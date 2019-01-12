@@ -7,11 +7,11 @@
 #include "Boyer_Moore.h"
 
 #include <QDirIterator>
-#include <fstream>
 #include <QThread>
 #include <QCheckBox>
 
 #include <QMessageBox>
+#include "my_functions.h"
 
 //#include <boost/tokenizer.hpp>
 
@@ -50,6 +50,8 @@ subStringFinder::subStringFinder(QWidget *parent) :
 
 	connect(ui->lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(pattern_updated(const QString &)));
 
+	connect(ui->undoButton, &QPushButton::clicked, this, &subStringFinder::undo_selecting);
+
 	qRegisterMetaType<MyArray2>("MyArray2");
 	qRegisterMetaType<std::string>("std::string");
 	qRegisterMetaType<std::set<FilesTrigram, FilesTrigram::cmp>>("std::set<FilesTrigram, FilesTrigram::cmp>");
@@ -57,6 +59,10 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	fsWatcher = new QFileSystemWatcher(this);
 	connect(fsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
 	show_filters();
+}
+
+void subStringFinder::undo_selecting() {
+	ui->treeWidget->clearSelection();
 }
 
 void subStringFinder::closeEvent(QCloseEvent *event) {

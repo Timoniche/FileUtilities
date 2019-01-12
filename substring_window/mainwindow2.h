@@ -1,10 +1,8 @@
 #ifndef MAINWINDOW2_H
 #define MAINWINDOW2_H
 
-#include "my_functions.h"
 #include "trigram.h"
 
-#include "copies_window/dumpInfo.h"
 #include "filtersDialog.h"
 #include "substring_finder.h"
 
@@ -52,6 +50,7 @@ private slots:
 	void interrupt_thread();
 	void show_filters();
 	void reload_files();
+	void undo_selecting();
 
 	//____________________
 	void changed(const QString& flName);
@@ -61,7 +60,7 @@ protected:
 	void closeEvent(QCloseEvent *event) override;
 
 private:
-	clock_t _timeIn;
+	clock_t _timeIn = 0;
 	QStringList _filters;
 	bool _isRunning = false;
 
