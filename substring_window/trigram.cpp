@@ -34,7 +34,7 @@ void FilesTrigram::splitStringToTrigram(std::string const & s, std::set<uint32_t
 	//qs.toUtf8().constData();
 	//now without validation
 	uint32_t curTrigram = (static_cast<uint8_t>(s[0]) << 8) | (static_cast<uint8_t>(s[1]));
-	for (int i = 2; i < s.length(); i++) {
+	for (size_t i = 2; i < s.length(); i++) {
 		curTrigram &= 0xFFFF; // clear first (head) 16 bits
 		curTrigram <<= 8;
 		curTrigram |= static_cast<uint8_t>(s[i]);
