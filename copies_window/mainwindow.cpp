@@ -70,7 +70,9 @@ main_window::main_window(QWidget *parent) :
 //    this->setPalette(palette);
 
     connect(ui->actionScan_Directory, &QAction::triggered, this, &main_window::select_directory);
+
     connect(ui->actionExit, &QAction::triggered, this, &QWidget::close);
+
     connect(ui->actionAbout, &QAction::triggered, this, &main_window::show_about_dialog);
     connect(ui->selectButton, &QPushButton::clicked, this, &main_window::select_all_extra_files);
     connect(ui->deleteButton, &QPushButton::clicked, this, &main_window::delete_copies);
@@ -97,6 +99,10 @@ main_window::main_window(QWidget *parent) :
 
 main_window::~main_window() = default;
 
+void main_window::closeEvent(QCloseEvent *event) {
+	interrupt_thread();
+	event->accept();
+}
 
 void main_window::undo_selecting() {
 	ui->treeWidget->clearSelection();
@@ -143,6 +149,8 @@ void main_window::expand() {
 }
 
 void main_window::scan_directory() { //todo: add find file function
+	interrupt_thread();
+
 	ui->buttonStop->setEnabled(true);
 	ui->pauseButton->setEnabled(true);
 	ui->continueButton->setEnabled(false);
@@ -208,13 +216,17 @@ void main_window::save_max_bar(int val) {
 }
 
 void main_window::interrupt_thread() {
-    thread->requestInterruption();
+	if (thread != nullptr && _isRunning) {
+		thread->requestInterruption();
+	}
+	_isRunning = false;
 }
 
 void main_window::find_copies(QString const &dir) {
 
 	_free_space = 0;
 
+	_isRunning = true;
     ui->statusBar->showMessage(tr("Searching for copies..."));
     _timeIn = clock();
     thread = new QThread;
@@ -274,6 +286,7 @@ void main_window::dump_selected() {
 }
 
 void main_window::scan_has_finished() {
+	_isRunning = false;
 
     ui->selectButton->setEnabled(true);
     ui->buttonStop->setEnabled(false);

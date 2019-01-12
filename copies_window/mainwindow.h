@@ -7,6 +7,8 @@
 #include <QMainWindow>
 #include <memory>
 
+#include <QCloseEvent>
+
 typedef std::vector<std::vector<std::string> > MyArray;
 
 
@@ -58,9 +60,13 @@ private slots:
 
     void scan_has_finished();
 
+protected:
+	void closeEvent(QCloseEvent *event) override;
+
 private:
 
 	//TODO: change all pointers to unique ptr
+	bool _isRunning = false;
 
 	QString _dir_to_dump;
 

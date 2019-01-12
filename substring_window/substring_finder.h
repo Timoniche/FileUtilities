@@ -25,7 +25,7 @@ public:
 
 public slots:
 
-	void process(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const& _filesTrigrams);
+	void process(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const * files_trigrams);
 
 signals:
 
@@ -39,7 +39,7 @@ signals:
 
 private:
 
-	void process_impl(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const& _filesTrigrams);
+	void process_impl(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const * files_trigrams);
 
 	//TODO: make it private
 public:

@@ -18,7 +18,7 @@ namespace {
 
 }
 
-void substring_finder::process_impl(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const& _filesTrigrams) {
+void substring_finder::process_impl(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const * files_trigrams) {
 	try {
 		auto cancellation_point = [thread = QThread::currentThread(), this]() {
 			if (thread->isInterruptionRequested()) {
@@ -35,8 +35,8 @@ void substring_finder::process_impl(std::string const& pattern, std::set<FilesTr
 
 		std::set<uint32_t> pattern_trigrams;
 		FilesTrigram::splitStringToTrigram(pattern, pattern_trigrams);
-		if (!_filesTrigrams.empty()) {
-			for (auto file : _filesTrigrams) {
+		if (!files_trigrams->empty()) {
+			for (auto file : *files_trigrams) {
 				cancellation_point();
 				auto *ANS = new std::vector< std::pair<int, std::vector<int>> >();
 				std::vector<int> toMerge;
@@ -79,9 +79,10 @@ void substring_finder::process_impl(std::string const& pattern, std::set<FilesTr
 	emit finished();
 }
 
-void substring_finder::process(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const& _filesTrigrams) {
+void substring_finder::process(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const * files_trigrams) {
 	try {
-		process_impl(pattern, _filesTrigrams);
+		//process_impl(pattern, _filesTrigrams);
+		process_impl(pattern, files_trigrams);
 	}
 	catch (std::exception &ex) {
 		emit error(ex.what());

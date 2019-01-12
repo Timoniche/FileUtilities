@@ -12,6 +12,7 @@
 #include <memory>
 
 #include <QFileSystemWatcher>
+#include <QCloseEvent>
 
 //name of file & occurrences
 typedef std::pair<std::string, std::vector< std::pair<int, std::vector<int>> >>  MyArray2;
@@ -31,8 +32,11 @@ public:
 	~subStringFinder() override;
 	
 signals:
+	//void start_substring_finder(std::string const& pattern,
+	//	std::set<FilesTrigram, FilesTrigram::cmp> const& _filesTrigrams);
 	void start_substring_finder(std::string const& pattern,
-		std::set<FilesTrigram, FilesTrigram::cmp> const& _filesTrigrams);
+		std::set<FilesTrigram, FilesTrigram::cmp> const * _filesTrigrams);
+
 private slots:
 
 	void expand();
@@ -51,6 +55,9 @@ private slots:
 	//____________________
 	void changed(const QString& flName);
 	void pattern_updated(const QString &);
+
+protected:
+	void closeEvent(QCloseEvent *event) override;
 
 private:
 	clock_t _timeIn;

@@ -57,6 +57,11 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	show_filters();
 }
 
+void subStringFinder::closeEvent(QCloseEvent *event) {
+	interrupt_thread();
+	event->accept();
+}
+
 void subStringFinder::pattern_updated(const QString&) {
 	interrupt_thread();
 	search();
@@ -262,6 +267,8 @@ void subStringFinder::add_path() {
 }
 
 void subStringFinder::search() {
+	interrupt_thread();
+
 	ui->statusBar->showMessage(tr("Searching substring..."));
 	ui->progressBar->setValue(0);
 	ui->progressBar->setMaximum(static_cast<int>(_filesTrigrams.size()));
@@ -275,7 +282,7 @@ void subStringFinder::search() {
 		//show no message
 		return;
 	}
-	if (_filesTrigrams.size() == 0) {
+	if (_filesTrigrams.empty()) {
 		//show no files message
 		return;
 	}
@@ -299,7 +306,7 @@ void subStringFinder::search() {
 	connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
 	thread->start();
-	emit start_substring_finder(pattern, _filesTrigrams);
+	emit start_substring_finder(pattern, &_filesTrigrams);
 }
 
 subStringFinder::~subStringFinder() = default;

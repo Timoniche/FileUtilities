@@ -36,6 +36,7 @@ void copies_finder::process_impl() {
         std::vector<std::string> files_path;
         int count_of_files = 0;
         while (it.hasNext()) {
+			cancellation_point();
             files_path.push_back(it.next().toStdString());
             count_of_files++;
         }
