@@ -5,7 +5,7 @@
 FilesTrigram::FilesTrigram(std::string file_name) : _file_name(file_name) {
 	std::ifstream stream(_file_name);
 	if (!stream.is_open()) {
-		throw std::runtime_error("Can't open one file");
+		throw std::runtime_error("Can't open " + _file_name);
 	}
 	std::string cur_line;
 	while (!stream.eof()) {
