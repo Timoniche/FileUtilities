@@ -11,6 +11,8 @@
 #include <QThread>
 #include <QCheckBox>
 
+#include <QMessageBox>
+
 //#include <boost/tokenizer.hpp>
 
 
@@ -67,9 +69,32 @@ void subStringFinder::pattern_updated(const QString&) {
 	search();
 }
 
+void subStringFinder::reload_files() {
+	if (!_isRunning) {
+		QMessageBox::StandardButton reply = QMessageBox::question(this, "reload changed files",
+			"Do you want to reload all files now?",
+			QMessageBox::Yes | QMessageBox::No);
+		if (reply == QMessageBox::Yes) {
+			for (auto u : changed_files) {
+				for (auto iter = _filesTrigrams.begin(); iter != _filesTrigrams.end(); iter++) {
+					if (iter->get_string_name() == u) {
+						_filesTrigrams.erase(iter);
+						_filesTrigrams.emplace(u);
+						break;
+					}
+				}
+			}
+		}
+		else {
+			//do nothing
+		}
+	}
+}
+
 void subStringFinder::changed(const QString& flName) {
 	ui->statusBar->showMessage(flName + QString(" changed"));
-	//do you want to reload it?
+	changed_files.emplace(flName.toStdString());
+	reload_files();
 }
 
 void subStringFinder::show_filters() {
@@ -130,6 +155,10 @@ void subStringFinder::scan_has_finished() {
 	//TODO: add like QString.args
 	ui->statusBar->showMessage(tr("Time spent ") + QString::number(timeSpent) + tr("ms") +
 		" - " + QString::number(timeSpent / 1000) + tr("sec  "));
+
+	if (!changed_files.empty()) {
+		reload_files();
+	}
 }
 
 void subStringFinder::merge_pack(MyArray2 pack) {

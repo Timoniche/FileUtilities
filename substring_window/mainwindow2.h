@@ -51,6 +51,7 @@ private slots:
 	void update_bar(int val);
 	void interrupt_thread();
 	void show_filters();
+	void reload_files();
 
 	//____________________
 	void changed(const QString& flName);
@@ -71,6 +72,7 @@ private:
 	substring_finder* worker = nullptr;
 
 	std::unique_ptr<filtersDialog> filtersWindow;
+	std::set<std::string> changed_files;
 
 	QFileSystemWatcher *fsWatcher;
 
