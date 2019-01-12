@@ -303,6 +303,7 @@ void subStringFinder::add_path() {
 
 void subStringFinder::search() {
 	interrupt_thread();
+	if (_filesTrigrams.empty()) return;
 
 	ui->statusBar->showMessage(tr("Searching substring..."));
 	ui->progressBar->setValue(0);
