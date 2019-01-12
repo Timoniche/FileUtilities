@@ -70,11 +70,11 @@ private:
 
 	bool _help_mode = false;
 
+	std::unique_ptr<Ui::MainWindow> ui;
+
 	std::unique_ptr<dumpInfo> dump_window;
 
     void error(QString err);
-
-    std::unique_ptr<Ui::MainWindow> ui;
 
     QThread* thread = nullptr;
 
