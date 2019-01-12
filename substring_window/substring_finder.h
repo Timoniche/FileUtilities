@@ -11,7 +11,7 @@
 #include <QWaitCondition>
 #include <QMutex>
 #include <set>
-#include <substring_window/trigram.h>
+#include "substring_window/trigram.h"
 
 //name of file & occurrences
 typedef std::pair<std::string, std::vector< std::pair<int, std::vector<int>> >>  MyArray2;
