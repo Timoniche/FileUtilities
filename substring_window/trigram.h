@@ -9,7 +9,7 @@ class FilesTrigram {
 
 public:
 
-	FilesTrigram(std::string file_name);
+	FilesTrigram(std::string const & file_name);
 	~FilesTrigram();
 
 public:
@@ -29,9 +29,9 @@ public:
 	};
 
 
-	bool hasTrigrams(std::set<uint32_t> text_trigrams);
+	bool hasTrigrams(std::set<uint32_t> const & text_trigrams);
 
-	static void splitStringToTrigram(std::string s, std::set<uint32_t>& trSet);
+	static void splitStringToTrigram(std::string const & s, std::set<uint32_t>& trSet);
 
 private:
 	std::string _file_name;

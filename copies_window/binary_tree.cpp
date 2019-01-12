@@ -32,7 +32,7 @@ void binary_tree::build_final_tree(std::vector<std::ifstream> &streams, std::vec
     std::vector<char> buffer(1ull << two_pow_len);
     cancellation_point();
     if (two_pow_len < gap_point) {
-        long gcount = 0;
+        size_t gcount = 0;
         std::map<std::vector<char>, std::vector<int>> Map;
         for (int fNumber : *fNumbers) {
             auto index = static_cast<size_t>(fNumber);
@@ -80,7 +80,7 @@ void binary_tree::build_final_tree(std::vector<std::ifstream> &streams, std::vec
             ans.push_back(*fNumbers);
         }
     } else {
-        long gcount = 0;
+        size_t gcount = 0;
         QCryptographicHash sha(QCryptographicHash::Sha3_256);
         std::map<QByteArray, std::vector<int>> Map;
 
