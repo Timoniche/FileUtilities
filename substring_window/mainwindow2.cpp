@@ -303,7 +303,8 @@ void subStringFinder::add_path() {
 
 void subStringFinder::search() {
 	interrupt_thread();
-	if (_filesTrigrams.empty()) return;
+	std::string pattern = ui->lineEdit->text().toStdString();
+	if (_filesTrigrams.empty() || pattern == "") return;
 
 	ui->statusBar->showMessage(tr("Searching substring..."));
 	ui->progressBar->setValue(0);
@@ -313,11 +314,6 @@ void subStringFinder::search() {
 	ui->pauseButton->setEnabled(true);
 	ui->stopButton->setEnabled(true);
 
-	std::string pattern = ui->lineEdit->text().toStdString();
-	if (pattern == "") {
-		//show no message
-		return;
-	}
 	if (_filesTrigrams.empty()) {
 		//show no files message
 		return;
