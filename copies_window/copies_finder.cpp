@@ -85,7 +85,8 @@ void copies_finder::process_impl() {
                 auto *buf = new std::vector<char>();
                 std::ifstream stream_initial(u.second[i], std::ios::binary);
                 if (!stream_initial.is_open()) {
-                    throw std::runtime_error("Can't open one file");
+                    //throw std::runtime_error("Can't open one file");
+					continue;
                 }
                 stream_initial.read(buf_from.data(), buf_from.size());
                 long gcount = stream_initial.gcount();
