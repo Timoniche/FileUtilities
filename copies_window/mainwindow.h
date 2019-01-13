@@ -26,6 +26,8 @@ public:
 
 private slots:
 
+	void dir_changed(const QString & dir);
+
 	void buttons_control();
 
 	void switch_widget();
@@ -64,6 +66,8 @@ private slots:
 
     void scan_has_finished();
 
+	void analyze_log(QString l);
+
 protected:
 	void closeEvent(QCloseEvent *event) override;
 
@@ -78,7 +82,7 @@ private:
 
 	QString _file_dump_name = "/dump_file.txt";
 
-    clock_t _timeIn;
+    clock_t _timeIn{};
 
 	bool _help_mode = false;
 
@@ -96,7 +100,7 @@ private:
 
 	void restart_thread();
 
-	size_t _free_space;
+	size_t _free_space{};
 };
 
 #endif // MAINWINDOW_H

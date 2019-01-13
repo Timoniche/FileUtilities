@@ -14,12 +14,11 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
-#include <QDirIterator>
 #include <array>
 #include <chrono>
-#include <fstream>
 #include <QtCore/QThread>
 #include <QTextStream>
+#include <QTime>
 
 
 main_window::main_window(QWidget *parent) : 
@@ -60,10 +59,25 @@ main_window::main_window(QWidget *parent) :
     connect(ui->buttonStop, &QPushButton::clicked, this, &main_window::interrupt_thread);
     connect(ui->pauseButton, &QPushButton::clicked, this, &main_window::pause_thread);
 	connect(ui->switchButton, &QPushButton::clicked, this, &main_window::switch_widget);
+	connect(ui->lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(dir_changed(const QString &)));
 	connect(ui->treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(buttons_control()));
+
+	qRegisterMetaType<MyArray>("MyArray");
+	qRegisterMetaType<clock_t>("clock_t");
 }
 
 main_window::~main_window() = default;
+
+void main_window::dir_changed(const QString & dir) {
+	_cur_dir = dir;
+}
+
+void main_window::analyze_log(QString l) {
+	auto* item = new QListWidgetItem();
+	QTime curr_time = QTime::currentTime();
+	item->setText(curr_time.toString("hh:mm:ss") + " log: " + l);
+	ui->listWidget->addItem(item);
+}
 
 void main_window::buttons_control() {
 	if (ui->treeWidget->selectedItems().empty()) {
@@ -87,6 +101,7 @@ void main_window::switch_widget() {
 	case 1:
 		ui->switchButton->setText("Go to duplicates tree");
 		break;
+	default: ;
 	}
 }
 
@@ -115,9 +130,10 @@ void main_window::restart_thread() {
 }
 
 void main_window::error(QString err) {
-    auto *item = new QTreeWidgetItem(ui->treeWidget);
-    item->setText(0, err);
-    ui->treeWidget->addTopLevelItem(item);
+	auto* item = new QListWidgetItem();
+	QTime curr_time = QTime::currentTime();
+	item->setText(curr_time.toString("hh:mm:ss") + " err: " + err);
+	ui->listWidget->addItem(item);
 }
 
 void main_window::analyze_error(QString err) {
@@ -145,6 +161,7 @@ void main_window::scan_directory() { //todo: add find file function
 	interrupt_thread();
 
     if (!QDir(_cur_dir).exists()) {
+		ui->treeWidget->clear();
         show_message("There is no such file or directory");
     } else {
         ui->treeWidget->clear();
@@ -292,7 +309,7 @@ void main_window::scan_has_finished() {
 	ui->continueButton->setEnabled(false);
 
     if (ui->treeWidget->topLevelItemCount() == 0) {
-        show_message(QString(tr("no copies here")));
+        show_message(QString(tr("no copies here or there were errors \ncheck out log to see more information")));
     }
     clock_t timeOut = clock();
     double timeSpent = ((timeOut - _timeIn) * 1000) / CLOCKS_PER_SEC; //NOLINT

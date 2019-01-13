@@ -37,6 +37,8 @@ signals:
 
     void error(QString err);
 
+	void log(QString l);
+
 private:
     QString _dir;
 

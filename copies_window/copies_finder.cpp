@@ -43,18 +43,15 @@ void copies_finder::process_impl() {
 
         emit set_max_bar(count_of_files);
 
-        //grouping files by size
-        std::map<size_t, std::vector<std::string>> map;
+        std::map<size_t, std::vector<std::string>> grouping_files_by_size;
 
         for (const auto &path : files_path) {
             cancellation_point();
             size_t size = static_cast<size_t>((QFileInfo(QString::fromStdString(path))).size());
             if (size != 0) {
-                auto iter = map.find(size);
-                if (iter == map.end()) {
-                    std::vector<std::string> new_group;
-                    new_group.push_back(path);
-                    map.insert({size, new_group});
+                auto iter = grouping_files_by_size.find(size);
+                if (iter == grouping_files_by_size.end()) {
+					grouping_files_by_size.insert({size, {path}});
                 } else {
                     iter->second.push_back(path);
                 }
@@ -63,12 +60,7 @@ void copies_finder::process_impl() {
             }
         }
 
-        qRegisterMetaType<MyArray>("MyArray");
-        qRegisterMetaType<clock_t>("clock_t");
-
-        std::exception_ptr ex_ptr;
-
-        for (auto u : map) {
+        for (auto u : grouping_files_by_size) {
             cancellation_point();
 
             if (u.second.size() <= 1) {
@@ -76,28 +68,26 @@ void copies_finder::process_impl() {
                 continue;
             }
 
-            auto *ANS = new std::vector<std::vector<std::string>>();
+			std::vector<std::vector<std::string>> ANS;
 
             //not to open so many streams at one time
             std::map<std::vector<char>, std::vector<int>> mapa;
             for (int i = 0; i < u.second.size(); ++i) {
-                std::array<char, 4> buf_from{};
-                auto *buf = new std::vector<char>();
+                std::array<char, 100> buf_from{};
+				std::vector<char> buf;
                 std::ifstream stream_initial(u.second[i], std::ios::binary);
                 if (!stream_initial.is_open()) {
-                    //throw std::runtime_error("Can't open one file");
+					emit log(QString(tr("Can't open one file ")) + QString::fromStdString(u.second[i]));
 					continue;
                 }
                 stream_initial.read(buf_from.data(), buf_from.size());
                 size_t gcount = stream_initial.gcount();
                 for (size_t j = 0; j < gcount; ++j) {
-                    buf->push_back(buf_from[j]);
+                    buf.push_back(buf_from[j]);
                 }
-                auto iterator = mapa.find(*buf);
+                auto iterator = mapa.find(buf);
                 if (iterator == mapa.end()) {
-                    auto *new_group = new std::vector<int>();
-                    new_group->push_back(i);
-                    mapa.insert({*buf, *new_group});
+					mapa.insert({buf, {i} });
                 } else {
                     iterator->second.push_back(i);
                 }
@@ -132,12 +122,12 @@ void copies_finder::process_impl() {
                     }
                     ans_to_merge.push_back(std::move(temp));
                 }
-                ANS->insert(ANS->end(), std::make_move_iterator(ans_to_merge.begin()),
+                ANS.insert(ANS.end(), std::make_move_iterator(ans_to_merge.begin()),
                             std::make_move_iterator(ans_to_merge.end()));
 
             }
-            if (!ANS->empty()) {
-                emit update_tree(*ANS);
+            if (!ANS.empty()) {
+                emit update_tree(ANS);
             }
             emit increase_bar(static_cast<int>(u.second.size()));
             cancellation_point();
