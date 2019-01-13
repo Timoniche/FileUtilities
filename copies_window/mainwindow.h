@@ -26,6 +26,10 @@ public:
 
 private slots:
 
+	void buttons_control();
+
+	void switch_widget();
+
 	void dump_selected();
 
 	void undo_selecting();
@@ -64,6 +68,8 @@ protected:
 	void closeEvent(QCloseEvent *event) override;
 
 private:
+
+	QString _cur_dir;
 
 	//TODO: change all pointers to unique ptr
 	bool _isRunning = false;

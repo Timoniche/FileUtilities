@@ -12,7 +12,7 @@ namespace {
 
 	struct cancellation_exception : std::exception {
 		const char *what() const noexcept override {
-			return "Stop pressed";
+			return "Process interrupted";
 		}
 	};
 

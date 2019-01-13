@@ -10,7 +10,7 @@ namespace {
 
     struct cancellation_exception : std::exception {
         const char *what() const noexcept override {
-            return "Stop pressed";
+            return "Process interrupted";
         }
     };
 
@@ -89,7 +89,7 @@ void copies_finder::process_impl() {
 					continue;
                 }
                 stream_initial.read(buf_from.data(), buf_from.size());
-                long gcount = stream_initial.gcount();
+                size_t gcount = stream_initial.gcount();
                 for (size_t j = 0; j < gcount; ++j) {
                     buf->push_back(buf_from[j]);
                 }

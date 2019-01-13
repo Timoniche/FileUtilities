@@ -8,7 +8,7 @@ const int gap_point = 6;
 namespace {
     struct cancellation_exception : std::exception {
         const char* what() const noexcept override {
-            return "Stop pressed";
+            return "Process interrupted";
         }
     };
 }

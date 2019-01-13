@@ -41,64 +41,54 @@ main_window::main_window(QWidget *parent) :
     ui->treeWidget->setUniformRowHeights(true);
 	ui->treeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
-    ui->buttonStop->setEnabled(false);
-    //ui->treeWidget->setStyleSheet("selection-background-color: yellow");
-
     QCommonStyle style;
     ui->actionScan_Directory->setIcon(style.standardIcon(QCommonStyle::SP_DialogOpenButton));
     ui->actionExit->setIcon(style.standardIcon(QCommonStyle::SP_DialogCloseButton));
     ui->actionAbout->setIcon(style.standardIcon(QCommonStyle::SP_DialogHelpButton));
 
-    //ui->centralWidget->setStyleSheet("{background-image: url(:/images/Gdyn.jpg);}");
-    //ui->widget->setStyleSheet("{background-image: url(:/images/Gdyn.jpg);}");
-    ui->selectButton->setEnabled(false);
-    ui->pauseButton->setEnabled(false);
-
-    //???
-//    QPixmap pixmap(":/images/Gdyn.jpg");
-//    QIcon ButtonIcon(pixmap);
-//    ui->pauseButton->setIcon(ButtonIcon);
-//    ui->pauseButton->setIconSize(pixmap.rect().size());
-
-//   ui->widget->setStyleSheet("{background-image: url(:/images/Gdyn.jpg);}");
-
-    //???
-//    QPixmap bkgnd(":/images/Gdyn.jpg");
-//    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
-//    QPalette palette;
-//    palette.setBrush(QPalette::Background, bkgnd);
-//    this->setPalette(palette);
-
     connect(ui->actionScan_Directory, &QAction::triggered, this, &main_window::select_directory);
-
     connect(ui->actionExit, &QAction::triggered, this, &QWidget::close);
-
     connect(ui->actionAbout, &QAction::triggered, this, &main_window::show_about_dialog);
     connect(ui->selectButton, &QPushButton::clicked, this, &main_window::select_all_extra_files);
     connect(ui->deleteButton, &QPushButton::clicked, this, &main_window::delete_copies);
     connect(ui->scanButton, &QPushButton::clicked, this, &main_window::scan_directory);
-    
 	connect(ui->dumpButton, &QPushButton::clicked, this, &main_window::dump_selected);
-
 	connect(ui->continueButton, &QPushButton::clicked, this, &main_window::restart_thread);
 	connect(ui->undoButton, &QPushButton::clicked, this, &main_window::undo_selecting);
-
     connect(ui->collapse, &QPushButton::clicked, this, &main_window::collapse);
     connect(ui->expand, &QPushButton::clicked, this, &main_window::expand);
-
-
-    //connect(ui->actionExit, &QAction::triggered, this, &main_window::interrupt_thread);
     connect(ui->buttonStop, &QPushButton::clicked, this, &main_window::interrupt_thread);
     connect(ui->pauseButton, &QPushButton::clicked, this, &main_window::pause_thread);
-
-
-	ui->buttonStop->setEnabled(false);
-	ui->pauseButton->setEnabled(false);
-	ui->continueButton->setEnabled(false);
-	ui->deleteButton->setEnabled(true);
+	connect(ui->switchButton, &QPushButton::clicked, this, &main_window::switch_widget);
+	connect(ui->treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(buttons_control()));
 }
 
 main_window::~main_window() = default;
+
+void main_window::buttons_control() {
+	if (ui->treeWidget->selectedItems().empty()) {
+		ui->undoButton->setEnabled(false);
+		ui->dumpButton->setEnabled(false);
+		ui->deleteButton->setEnabled(false);
+	} else {
+		ui->undoButton->setEnabled(true);
+		ui->dumpButton->setEnabled(true);
+		ui->deleteButton->setEnabled(true);
+	}
+}
+
+void main_window::switch_widget() {
+	int index = (ui->stackedWidget->currentIndex() + 1) % 2;
+	ui->stackedWidget->setCurrentIndex(index);
+	switch (index) {
+	case 0:
+		ui->switchButton->setText("Go to Log and Errors");
+		break;
+	case 1:
+		ui->switchButton->setText("Go to duplicates tree");
+		break;
+	}
+}
 
 void main_window::closeEvent(QCloseEvent *event) {
 	interrupt_thread();
@@ -112,12 +102,14 @@ void main_window::undo_selecting() {
 void main_window::pause_thread() {
 	ui->continueButton->setEnabled(true);
 	ui->pauseButton->setEnabled(false);
+	ui->buttonStop->setEnabled(false);
 	worker->_pause_required = true;
 }
 
 void main_window::restart_thread() {
 	ui->continueButton->setEnabled(false);
 	ui->pauseButton->setEnabled(true);
+	ui->buttonStop->setEnabled(true);
 	worker->_pause_required = false;
 	worker->_pause_Manager.wakeAll();
 }
@@ -135,10 +127,10 @@ void main_window::analyze_error(QString err) {
 
 void main_window::select_directory() {
 
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory for Scanning"),
+    _cur_dir = QFileDialog::getExistingDirectory(this, tr("Select Directory for Scanning"),
                                                     QString(),
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    ui->lineEdit->setText(dir);
+    ui->lineEdit->setText(_cur_dir);
 }
 
 void main_window::collapse() {
@@ -152,19 +144,20 @@ void main_window::expand() {
 void main_window::scan_directory() { //todo: add find file function
 	interrupt_thread();
 
-	ui->buttonStop->setEnabled(true);
-	ui->pauseButton->setEnabled(true);
-	ui->continueButton->setEnabled(false);
-    ui->selectButton->setEnabled(false);
-
-    QString dir = ui->lineEdit->text();
-    if (!QDir(dir).exists()) {
+    if (!QDir(_cur_dir).exists()) {
         show_message("There is no such file or directory");
     } else {
         ui->treeWidget->clear();
         ui->progressBar->setValue(0);
-        ui->pauseButton->setEnabled(true);
-        find_copies(dir);
+
+		ui->buttonStop->setEnabled(true);
+		ui->pauseButton->setEnabled(true);
+		ui->continueButton->setEnabled(false);
+		ui->selectButton->setEnabled(false);
+		ui->expand->setEnabled(false);
+		ui->collapse->setEnabled(false);
+
+        find_copies(_cur_dir);
     }
 }
 
@@ -293,10 +286,8 @@ void main_window::scan_has_finished() {
 
     ui->selectButton->setEnabled(true);
     ui->buttonStop->setEnabled(false);
-
     ui->collapse->setEnabled(true);
     ui->expand->setEnabled(true);
-
 	ui->pauseButton->setEnabled(false);
 	ui->continueButton->setEnabled(false);
 
