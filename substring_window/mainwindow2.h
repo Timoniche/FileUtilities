@@ -11,6 +11,13 @@
 
 #include <QFileSystemWatcher>
 #include <QCloseEvent>
+#include <QFuture>
+#include <QList>
+
+#include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentMap>
+#include <atomic>
 
 //name of file & occurrences
 typedef std::pair<std::string, std::vector< std::pair<int, std::vector<int>> >>  MyArray2;
@@ -34,6 +41,7 @@ signals:
 	//	std::set<FilesTrigram, FilesTrigram::cmp> const& _filesTrigrams);
 	void start_substring_finder(std::string const& pattern,
 		std::set<FilesTrigram, FilesTrigram::cmp> const * _filesTrigrams);
+	void indexing_finishing(QString dir);
 
 private slots:
 
@@ -51,10 +59,13 @@ private slots:
 	void show_filters();
 	void reload_files();
 	void undo_selecting();
+	void switch_widget();
+	void buttons_control();
 
 	//____________________
 	void changed(const QString& flName);
 	void pattern_updated(const QString &);
+	void indexing_has_finished(QString dir);
 
 protected:
 	void closeEvent(QCloseEvent *event) override;
@@ -63,8 +74,10 @@ private:
 	clock_t _timeIn = 0;
 	QStringList _filters;
 	bool _isRunning = false;
+	std::atomic_bool is_indexing = false;
 
 	std::set<FilesTrigram, FilesTrigram::cmp> _filesTrigrams;
+	std::set<std::string> files_push_to_trigrams;
 	std::unique_ptr<Ui::MainWindow1> ui;
 
 	QThread* thread = nullptr;
@@ -78,6 +91,11 @@ private:
 	void error(QString err);
 	void pause_thread();
 	void restart_thread();
+
+	QFuture<void> future;
+	void start_indexing(QString dir);
+	QFuture<FilesTrigram> index_map;
+	QList<FilesTrigram> tmp_trigram_list;
 };
 
 #endif // MAINWINDOW2_H

@@ -47,6 +47,9 @@
           </item>
           <item row="1" column="0">
            <widget class="QPushButton" name="expandButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Expand all</string>
             </property>
@@ -54,6 +57,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QPushButton" name="collapseButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Collapse all</string>
             </property>
@@ -62,7 +68,7 @@
           <item row="2" column="0">
            <widget class="QPushButton" name="undoButton">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="text">
              <string>Undo Selected</string>
@@ -92,7 +98,27 @@
          </widget>
         </item>
         <item>
+         <widget class="QProgressBar" name="indexBar">
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="indexStopButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Stop Indexing</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="removeButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Remove Selected</string>
           </property>
@@ -147,17 +173,42 @@
          </layout>
         </item>
         <item>
-         <widget class="QTreeWidget" name="treeWidget">
-          <column>
-           <property name="text">
-            <string notr="true">file_name</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>number_of_matches</string>
-           </property>
-          </column>
+         <widget class="QStackedWidget" name="stackedWidget">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="page">
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QTreeWidget" name="treeWidget">
+              <column>
+               <property name="text">
+                <string notr="true">file_name</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>number_of_matches</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="page_2">
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QListWidget" name="listWidget"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="switchButton">
+          <property name="text">
+           <string>Go to Log and Errors</string>
+          </property>
          </widget>
         </item>
        </layout>

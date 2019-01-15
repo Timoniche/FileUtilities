@@ -11,7 +11,11 @@
 #include <QCheckBox>
 
 #include <QMessageBox>
+#include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent/QtConcurrentRun>
+#include <QtConcurrent/QtConcurrentMap>
 #include "my_functions.h"
+#include <functional>
 
 //#include <boost/tokenizer.hpp>
 
@@ -30,6 +34,7 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	//ui->splitter->setStretchFactor(0, 2);
 	//ui->splitter_2->setStretchFactor(1, 2);
 	ui->progressBar->setValue(0);
+	ui->indexBar->setValue(0);
 	ui->treeWidget->setUniformRowHeights(true);
 	ui->treeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
@@ -51,6 +56,10 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	connect(ui->lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(pattern_updated(const QString &)));
 
 	connect(ui->undoButton, &QPushButton::clicked, this, &subStringFinder::undo_selecting);
+	connect(ui->switchButton, &QPushButton::clicked, this, &subStringFinder::switch_widget);
+	connect(ui->treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(buttons_control()));
+
+	connect(this, SIGNAL(indexing_finishing(QString)), this, SLOT(indexing_has_finished(QString)));
 
 	qRegisterMetaType<MyArray2>("MyArray2");
 	qRegisterMetaType<std::string>("std::string");
@@ -58,11 +67,38 @@ subStringFinder::subStringFinder(QWidget *parent) :
 
 	fsWatcher = new QFileSystemWatcher(this);
 	connect(fsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
+
 	show_filters();
 }
 
 void subStringFinder::undo_selecting() {
 	ui->treeWidget->clearSelection();
+}
+
+void subStringFinder::switch_widget() {
+	int index = (ui->stackedWidget->currentIndex() + 1) % 2;
+	ui->stackedWidget->setCurrentIndex(index);
+	switch (index) {
+	case 0:
+		ui->switchButton->setText("Go to Log and Errors");
+		break;
+	case 1:
+		ui->switchButton->setText("Go to duplicates tree");
+		break;
+	default:;
+	}
+}
+
+void subStringFinder::buttons_control()
+{
+	if (ui->treeWidget->selectedItems().empty()) {
+		ui->undoButton->setEnabled(false);
+		ui->dumpButton->setEnabled(false);
+	}
+	else {
+		ui->undoButton->setEnabled(true);
+		ui->dumpButton->setEnabled(true);
+	}
 }
 
 void subStringFinder::closeEvent(QCloseEvent *event) {
@@ -251,34 +287,59 @@ void subStringFinder::collapse() {
 	ui->treeWidget->collapseAll();
 }
 
+void subStringFinder::indexing_has_finished(QString dir) {
+	is_indexing = false;
+
+	size_t cur_size = _filesTrigrams.size();
+
+	for (auto u : tmp_trigram_list)
+	{
+		if (u.isValid)
+		{
+			fsWatcher->addPath(u.get_qstring_name());
+			_filesTrigrams.insert(std::move(u));
+		}
+	}
+
+	size_t last_size = _filesTrigrams.size();
+
+	if (cur_size == last_size) {
+	//show message "this file already added or couldn't open"
+	} else {
+		ui->fileList->insertItem(0, QString("%1").arg(dir));
+	}
+}
+
+void subStringFinder::start_indexing(QString dir) {
+
+	QDirIterator it(dir, _filters, QDir::Hidden | QDir::Files, QDirIterator::Subdirectories);
+
+	while (it.hasNext()) {
+		QString cur_path = it.next();
+		if (QFileInfo(cur_path).size() == 0) continue;
+		files_push_to_trigrams.insert(cur_path.toStdString());
+	}
+	std::function<FilesTrigram(std::string)> f = [this](std::string s) -> FilesTrigram
+	{
+		//if error occures here -> isValid = false;
+		return FilesTrigram(s);
+	};
+
+	index_map = QtConcurrent::mapped(files_push_to_trigrams, f);
+	tmp_trigram_list = index_map.results();
+	emit indexing_finishing(dir);
+}
+
 void subStringFinder::add_dir() {
 	//check if cancelled
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory for Scanning"),
 	QString(),
 	QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-	QDirIterator it(dir, _filters, QDir::Hidden | QDir::Files, QDirIterator::Subdirectories);
+	tmp_trigram_list.clear();
+	is_indexing = true;
 
-	size_t last_size = _filesTrigrams.size();
-	while (it.hasNext()) {
-		QString cur_path = it.next();
-		if (QFileInfo(cur_path).size() == 0) continue;
-		try {
-			_filesTrigrams.emplace(cur_path.toStdString());
-			fsWatcher->addPath(cur_path);
-		}
-		catch (std::exception& ex) {
-			error(ex.what());
-		}
-	}
-	size_t cur_size = _filesTrigrams.size();
-
-	if (cur_size == last_size) {
-		//show message "this file already added or couldn't open"
-	}
-	else {
-		ui->fileList->insertItem(0, QString("%1").arg(dir));
-	}
+	future = QtConcurrent::run(this, &subStringFinder::start_indexing, dir);
 }
 
 void subStringFinder::add_path() {
@@ -313,6 +374,8 @@ void subStringFinder::search() {
 
 	ui->pauseButton->setEnabled(true);
 	ui->stopButton->setEnabled(true);
+	ui->collapseButton->setEnabled(false);
+	ui->expandButton->setEnabled(false);
 
 	if (_filesTrigrams.empty()) {
 		//show no files message

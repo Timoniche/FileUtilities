@@ -2,24 +2,30 @@
 
 #include <fstream>
 
+FilesTrigram::FilesTrigram() = default;
 FilesTrigram::FilesTrigram(std::string const & file_name) : _file_name(file_name) {
 	std::ifstream stream(_file_name);
 	if (!stream.is_open()) {
-		throw std::runtime_error("Can't open " + _file_name);
+		isValid = false;
+		//cancel <-- throw std::runtime_error("Can't open " + _file_name);
+		//todo: --> throw to log from std::function;
 	}
-	std::string cur_line;
-	while (!stream.eof()) {
-		std::getline(stream, cur_line);
-		if (cur_line.size() < 3) {
-			continue;
-		}
-		else {
-			if (cur_line.size() > BUFFER_LINE_SIZE) {
-				//throw exc
-				//increase BUFFER_LINE_SIZE in preferences
-				//some data could be lost - continue?
-			} else {
-				splitStringToTrigram(cur_line, trigrams);
+	else {
+		std::string cur_line;
+		while (!stream.eof()) {
+			std::getline(stream, cur_line);
+			if (cur_line.size() < 3) {
+				continue;
+			}
+			else {
+				if (cur_line.size() > BUFFER_LINE_SIZE) {
+					//throw exc
+					//increase BUFFER_LINE_SIZE in preferences
+					//some data could be lost - continue?
+				}
+				else {
+					splitStringToTrigram(cur_line, trigrams);
+				}
 			}
 		}
 	}

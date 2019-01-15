@@ -24,7 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 #QMAKE_CXXFLAGS += -std=c++17
 CONFIG += c++17
-
+QT += concurrent
 SOURCES += \
         main.cpp \
         copies_window/mainwindow.cpp \

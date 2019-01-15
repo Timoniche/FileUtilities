@@ -9,6 +9,7 @@ class FilesTrigram {
 
 public:
 
+	FilesTrigram();
 	FilesTrigram(std::string const & file_name);
 	~FilesTrigram();
 
@@ -33,10 +34,13 @@ public:
 
 	static void splitStringToTrigram(std::string const & s, std::set<uint32_t>& trSet);
 
+public:
+	bool isValid = true;
+
 private:
 	std::string _file_name;
 	std::set<uint32_t> trigrams;
-
+	
 public:
 	std::string get_string_name() {
 		return _file_name;
