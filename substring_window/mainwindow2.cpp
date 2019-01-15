@@ -58,8 +58,12 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	connect(ui->undoButton, &QPushButton::clicked, this, &subStringFinder::undo_selecting);
 	connect(ui->switchButton, &QPushButton::clicked, this, &subStringFinder::switch_widget);
 	connect(ui->treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(buttons_control()));
+    connect(ui->fileList, SIGNAL(itemSelectionChanged()), this, SLOT(list_buttons_control()));
+    connect(ui->indexStopButton, SIGNAL(clicked()), this, SLOT(stop_indexing()));
 
 	connect(this, SIGNAL(indexing_finishing(QString)), this, SLOT(indexing_has_finished(QString)));
+    connect(this, SIGNAL(increase_index_bar(int)), this, SLOT(update_increase_bar(int)));
+    connect(this, SIGNAL(send_max_index_bar(int)), this, SLOT(set_max_index_bar(int)));
 
 	qRegisterMetaType<MyArray2>("MyArray2");
 	qRegisterMetaType<std::string>("std::string");
@@ -69,6 +73,33 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	connect(fsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
 
 	show_filters();
+}
+
+void subStringFinder::set_max_index_bar(int val) {
+    ui->indexBar->setMaximum(val);
+}
+
+void subStringFinder::update_increase_bar(int val) {
+    ui->indexBar->setValue(ui->indexBar->value() + val);
+}
+
+void subStringFinder::stop_indexing() {
+    if (is_indexing) {
+        is_indexing = false;
+        index_map.cancel();
+        future.waitForFinished();
+        tmp_trigram_list.clear();
+        ui->indexStopButton->setEnabled(false);
+    }
+}
+
+void subStringFinder::list_buttons_control() {
+    if (ui->fileList->selectedItems().empty()) {
+        ui->removeButton->setEnabled(false);
+    }
+    else {
+        ui->removeButton->setEnabled(true);
+    }
 }
 
 void subStringFinder::undo_selecting() {
@@ -289,7 +320,7 @@ void subStringFinder::collapse() {
 
 void subStringFinder::indexing_has_finished(QString dir) {
 	is_indexing = false;
-
+    ui->indexStopButton->setEnabled(false);
 	size_t cur_size = _filesTrigrams.size();
 
 	for (auto u : tmp_trigram_list)
@@ -311,18 +342,21 @@ void subStringFinder::indexing_has_finished(QString dir) {
 }
 
 void subStringFinder::start_indexing(QString dir) {
-
 	QDirIterator it(dir, _filters, QDir::Hidden | QDir::Files, QDirIterator::Subdirectories);
 
+    std::set<std::string> files_push_to_trigrams;
 	while (it.hasNext()) {
+        if (!is_indexing) { return; }
 		QString cur_path = it.next();
-		if (QFileInfo(cur_path).size() == 0) continue;
+        if (QFileInfo(cur_path).size() == 0) { continue; }
 		files_push_to_trigrams.insert(cur_path.toStdString());
 	}
-	std::function<FilesTrigram(std::string)> f = [this](std::string s) -> FilesTrigram
+    emit send_max_index_bar(files_push_to_trigrams.size());
+    std::function<FilesTrigram(std::string)> f = [this](std::string s) -> FilesTrigram
 	{
-		//if error occures here -> isValid = false;
-		return FilesTrigram(s);
+        //if error occurs here -> isValid = false;
+        emit increase_index_bar(1);
+        return FilesTrigram(s, &is_indexing);
 	};
 
 	index_map = QtConcurrent::mapped(files_push_to_trigrams, f);
@@ -332,6 +366,8 @@ void subStringFinder::start_indexing(QString dir) {
 
 void subStringFinder::add_dir() {
 	//check if cancelled
+    ui->indexBar->setValue(0);
+    ui->indexStopButton->setEnabled(true);
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory for Scanning"),
 	QString(),
 	QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);

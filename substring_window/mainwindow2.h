@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW2_H
 #define MAINWINDOW2_H
 
-#include "trigram.h"
+#include "substring_window/trigram.h"
 
 #include "filtersDialog.h"
 #include "substring_finder.h"
@@ -42,6 +42,8 @@ signals:
 	void start_substring_finder(std::string const& pattern,
 		std::set<FilesTrigram, FilesTrigram::cmp> const * _filesTrigrams);
 	void indexing_finishing(QString dir);
+    void increase_index_bar(int val);
+    void send_max_index_bar(int val);
 
 private slots:
 
@@ -66,6 +68,10 @@ private slots:
 	void changed(const QString& flName);
 	void pattern_updated(const QString &);
 	void indexing_has_finished(QString dir);
+    void list_buttons_control();
+    void stop_indexing();
+    void set_max_index_bar(int val);
+    void update_increase_bar(int val);
 
 protected:
 	void closeEvent(QCloseEvent *event) override;
@@ -77,7 +83,6 @@ private:
 	std::atomic_bool is_indexing = false;
 
 	std::set<FilesTrigram, FilesTrigram::cmp> _filesTrigrams;
-	std::set<std::string> files_push_to_trigrams;
 	std::unique_ptr<Ui::MainWindow1> ui;
 
 	QThread* thread = nullptr;

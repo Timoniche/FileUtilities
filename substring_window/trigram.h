@@ -10,11 +10,12 @@ class FilesTrigram {
 public:
 
 	FilesTrigram();
-	FilesTrigram(std::string const & file_name);
+    FilesTrigram(std::string const & file_name);
+    FilesTrigram(std::string const & file_name, std::atomic_bool const* indexing);
 	~FilesTrigram();
 
 public:
-	static const size_t BUFFER_LINE_SIZE = 1'000;
+    static const size_t BUFFER_LINE_SIZE = 1000;
 
 	struct cmp {
 		bool operator()(FilesTrigram const& lhs, FilesTrigram const& rhs) const {
@@ -40,9 +41,10 @@ public:
 private:
 	std::string _file_name;
 	std::set<uint32_t> trigrams;
+    std::atomic_bool const* _indexing;
 	
 public:
-	std::string get_string_name() {
+    std::string get_string_name() {
 		return _file_name;
 	}
 
