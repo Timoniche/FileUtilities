@@ -17,7 +17,7 @@ namespace Ui {
 }
 
 class main_window : public QMainWindow {
-	Q_OBJECT
+Q_OBJECT
 
 public:
     explicit main_window(QWidget *parent = nullptr);
@@ -26,15 +26,15 @@ public:
 
 private slots:
 
-	void dir_changed(const QString & dir);
+    void dir_changed(const QString &dir);
 
-	void buttons_control();
+    void buttons_control();
 
-	void switch_widget();
+    void switch_widget();
 
-	void dump_selected();
+    void dump_selected();
 
-	void undo_selecting();
+    void undo_selecting();
 
     void expand();
 
@@ -66,41 +66,41 @@ private slots:
 
     void scan_has_finished();
 
-	void analyze_log(QString l);
+    void analyze_log(QString l);
 
 protected:
-	void closeEvent(QCloseEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private:
 
-	QString _cur_dir;
+    QString _cur_dir;
 
-	//TODO: change all pointers to unique ptr
-	bool _isRunning = false;
+    //TODO: change all pointers to unique ptr
+    bool _isRunning = false;
 
-	QString _dir_to_dump;
+    QString _dir_to_dump;
 
-	QString _file_dump_name = "/dump_file.txt";
+    QString _file_dump_name = "/dump_file.txt";
 
     clock_t _timeIn{};
 
-	bool _help_mode = false;
+    bool _help_mode = false;
 
-	std::unique_ptr<Ui::MainWindow> ui;
+    std::unique_ptr<Ui::MainWindow> ui;
 
-	std::unique_ptr<dumpInfo> dump_window;
+    std::unique_ptr<dumpInfo> dump_window;
 
     void error(QString err);
 
-    QThread* thread = nullptr;
+    QThread *thread = nullptr;
 
-	copies_finder* worker = nullptr;
+    copies_finder *worker = nullptr;
 
     void pause_thread();
 
-	void restart_thread();
+    void restart_thread();
 
-	size_t _free_space{};
+    size_t _free_space{};
 };
 
 #endif // MAINWINDOW_H

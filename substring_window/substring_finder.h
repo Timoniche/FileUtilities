@@ -14,39 +14,40 @@
 #include "substring_window/trigram.h"
 
 //name of file & occurrences
-typedef std::pair<std::string, std::vector< std::pair<int, std::vector<int>> >>  MyArray2;
+typedef std::pair<std::string, std::vector<std::pair<int, std::vector<int>> >> MyArray2;
 
 class substring_finder : public QObject {
-	Q_OBJECT
+Q_OBJECT
 
 public:
-	substring_finder() = default;
-	~substring_finder() = default;
+    substring_finder() = default;
+
+    ~substring_finder() = default;
 
 public slots:
 
-	void process(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const * files_trigrams);
+    void process(std::string const &pattern, std::set<FilesTrigram, FilesTrigram::cmp> const *files_trigrams);
 
 signals:
 
-	void increase_bar(int val);
-	
-	void update_tree(MyArray2 pack);
+    void increase_bar(int val);
 
-	void finished();
+    void update_tree(MyArray2 pack);
 
-	void error(QString err);
+    void finished();
+
+    void error(QString err);
 
     void push_to_log(QString l);
 
 private:
 
-	void process_impl(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const * files_trigrams);
+    void process_impl(std::string const &pattern, std::set<FilesTrigram, FilesTrigram::cmp> const *files_trigrams);
 
-	//TODO: make it private
+    //TODO: make it private
 public:
-	QWaitCondition _pause_Manager;
-	QMutex _continue;
-	bool _pause_required = false;
+    QWaitCondition _pause_Manager;
+    QMutex _continue;
+    bool _pause_required = false;
 };
 

@@ -13,7 +13,7 @@
 
 struct binary_tree {
 
-	binary_tree(copies_finder* ref) : worker_from(ref) {}
+    binary_tree(copies_finder *ref) : worker_from(ref) {}
 
     friend copies_finder;
 
@@ -23,7 +23,7 @@ struct binary_tree {
                           std::vector<std::vector<int>> &ans, unsigned long two_pow_len);
 
 private:
-	copies_finder* worker_from;
+    copies_finder *worker_from;
 };
 
 #endif //FILECOPIES_BINARY_TREE_H

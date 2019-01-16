@@ -2,10 +2,9 @@
 #include "ui_filtersDialog.h"
 
 filtersDialog::filtersDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::Filters)
-{
-	ui->setupUi(this);
+        QDialog(parent),
+        ui(new Ui::Filters) {
+    ui->setupUi(this);
     connect(ui->chooseAll, SIGNAL(stateChanged(int)), this, SLOT(choose_all(int)));
     connect(ui->resetAll, SIGNAL(stateChanged(int)), this, SLOT(reset_all(int)));
 }
@@ -13,9 +12,8 @@ filtersDialog::filtersDialog(QWidget *parent) :
 void filtersDialog::choose_all(int index) {
     if (index == 2) {
         QListIterator<QObject *> i(ui->groupBox->children());
-        while (i.hasNext())
-        {
-            QCheckBox* b = qobject_cast<QCheckBox*>(i.next());
+        while (i.hasNext()) {
+            QCheckBox *b = qobject_cast<QCheckBox *>(i.next());
             if (b != nullptr) {
                 b->setChecked(true);
             }
@@ -27,9 +25,8 @@ void filtersDialog::choose_all(int index) {
 void filtersDialog::reset_all(int index) {
     if (index == 2) {
         QListIterator<QObject *> i(ui->groupBox->children());
-        while (i.hasNext())
-        {
-            QCheckBox* b = qobject_cast<QCheckBox*>(i.next());
+        while (i.hasNext()) {
+            QCheckBox *b = qobject_cast<QCheckBox *>(i.next());
             if (b != nullptr) {
                 b->setChecked(false);
             }

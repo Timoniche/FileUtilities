@@ -5,24 +5,24 @@
 #include <memory>
 
 namespace Ui {
-	class welcomeWindow;
+    class welcomeWindow;
 }
 
 class welcome_window : public QWidget {
-	Q_OBJECT
+Q_OBJECT
 
 private slots:
 
-	void go();
+    void go();
 
 public:
-	explicit welcome_window(QWidget *parent = nullptr);
+    explicit welcome_window(QWidget *parent = nullptr);
 
-	~welcome_window() override;
+    ~welcome_window() override;
 
 private:
 
-	std::unique_ptr<Ui::welcomeWindow> ui;
+    std::unique_ptr<Ui::welcomeWindow> ui;
 
 };
 

@@ -9,23 +9,23 @@
 class Boyer_Moore {
 
 public:
-	Boyer_Moore(const std::string &text, const std::string &pattern);
+    Boyer_Moore(const std::string &text, const std::string &pattern);
 
 private:
-	std::string text;
-	int n;
-	std::string pattern;
-	int m;
+    std::string text;
+    int n;
+    std::string pattern;
+    int m;
 
 public:
-	std::vector<int> occurrences;
+    std::vector<int> occurrences;
 private:
-	std::vector<int> suffShift;
-	std::vector<int> z;
+    std::vector<int> suffShift;
+    std::vector<int> z;
 private:
-	void fillSuffShift();
+    void fillSuffShift();
 
-	void findOccurrences();
+    void findOccurrences();
 };
 
 #endif //BOYER_MOORE_BOYER_MOORE_H

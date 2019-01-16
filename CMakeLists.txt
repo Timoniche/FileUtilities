@@ -15,9 +15,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Concurrent REQUIRED)
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
+include_directories(${Qt5Concurrent_INCLUDE_DIRS})
+
 
 add_executable(FileCopies
         main.cpp
@@ -56,6 +59,7 @@ add_executable(FileCopies
 
 target_link_libraries(FileCopies Qt5::Core)
 target_link_libraries(FileCopies Qt5::Widgets)
+target_link_libraries(FileCopies Qt5::Concurrent)
 target_link_libraries(FileCopies stdc++fs)
 
 qt5_use_modules(FileCopies Widgets)

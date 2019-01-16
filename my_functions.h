@@ -4,5 +4,5 @@
 
 namespace my_functions {
 
-	const char *add_suffix(int n);
+    const char *add_suffix(int n);
 }

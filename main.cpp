@@ -3,9 +3,8 @@
 
 #include <QApplication>
 
-int main(int argc, char *argv[])
-{
-	QApplication a(argc, argv);
+int main(int argc, char *argv[]) {
+    QApplication a(argc, argv);
 
     welcome_window w;
     w.show();
@@ -31,7 +30,6 @@ int main(int argc, char *argv[])
 //todo: асинхронность (много потоков для хешей)
 //todo: сделать обработчик для "too many streams" увеличив
 //первоначальную константу буфера
-//todo: добавить мини-игру в левом верхнем углу
 //todo: добавить лог в левом нижнем углу с выводом и всех ошибок (типа filed pushed successfully)
 
 //____________________________________________________________________________________________________

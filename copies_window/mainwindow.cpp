@@ -21,13 +21,12 @@
 #include <QTime>
 
 
-main_window::main_window(QWidget *parent) : 
-	QMainWindow(parent), 
-	ui(new Ui::MainWindow),
-	dump_window(new dumpInfo(this))
-{
+main_window::main_window(QWidget *parent) :
+        QMainWindow(parent),
+        ui(new Ui::MainWindow),
+        dump_window(new dumpInfo(this)) {
     ui->setupUi(this);
-	dump_window->setWindowModality(Qt::WindowModality::WindowModal);
+    dump_window->setWindowModality(Qt::WindowModality::WindowModal);
 
     setWindowTitle("File Copies");
     ui->progressBar->setValue(0);
@@ -38,7 +37,7 @@ main_window::main_window(QWidget *parent) :
     ui->treeWidget->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
     ui->treeWidget->setUniformRowHeights(true);
-	ui->treeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
+    ui->treeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
     QCommonStyle style;
     ui->actionScan_Directory->setIcon(style.standardIcon(QCommonStyle::SP_DialogOpenButton));
@@ -55,89 +54,91 @@ main_window::main_window(QWidget *parent) :
     connect(ui->selectButton, &QPushButton::clicked, this, &main_window::select_all_extra_files);
     connect(ui->deleteButton, &QPushButton::clicked, this, &main_window::delete_copies);
     connect(ui->scanButton, &QPushButton::clicked, this, &main_window::scan_directory);
-	connect(ui->dumpButton, &QPushButton::clicked, this, &main_window::dump_selected);
-	connect(ui->continueButton, &QPushButton::clicked, this, &main_window::restart_thread);
-	connect(ui->undoButton, &QPushButton::clicked, this, &main_window::undo_selecting);
+    connect(ui->dumpButton, &QPushButton::clicked, this, &main_window::dump_selected);
+    connect(ui->continueButton, &QPushButton::clicked, this, &main_window::restart_thread);
+    connect(ui->undoButton, &QPushButton::clicked, this, &main_window::undo_selecting);
     connect(ui->collapse, &QPushButton::clicked, this, &main_window::collapse);
     connect(ui->expand, &QPushButton::clicked, this, &main_window::expand);
     connect(ui->buttonStop, &QPushButton::clicked, this, &main_window::interrupt_thread);
     connect(ui->pauseButton, &QPushButton::clicked, this, &main_window::pause_thread);
-	connect(ui->switchButton, &QPushButton::clicked, this, &main_window::switch_widget);
-	connect(ui->lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(dir_changed(const QString &)));
-	connect(ui->treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(buttons_control()));
+    connect(ui->switchButton, &QPushButton::clicked, this, &main_window::switch_widget);
+    connect(ui->lineEdit, SIGNAL(textChanged(
+                                         const QString &)), this, SLOT(dir_changed(
+                                                                               const QString &)));
+    connect(ui->treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(buttons_control()));
 
-	qRegisterMetaType<MyArray>("MyArray");
-	qRegisterMetaType<clock_t>("clock_t");
+    qRegisterMetaType<MyArray>("MyArray");
+    qRegisterMetaType<clock_t>("clock_t");
 }
 
 main_window::~main_window() = default;
 
-void main_window::dir_changed(const QString & dir) {
-	_cur_dir = dir;
+void main_window::dir_changed(const QString &dir) {
+    _cur_dir = dir;
 }
 
 void main_window::analyze_log(QString l) {
-	auto* item = new QListWidgetItem();
-	QTime curr_time = QTime::currentTime();
-	item->setText(curr_time.toString("hh:mm:ss") + " log: " + l);
-	ui->listWidget->addItem(item);
+    auto *item = new QListWidgetItem();
+    QTime curr_time = QTime::currentTime();
+    item->setText(curr_time.toString("hh:mm:ss") + " log: " + l);
+    ui->listWidget->addItem(item);
 }
 
 void main_window::buttons_control() {
-	if (ui->treeWidget->selectedItems().empty()) {
-		ui->undoButton->setEnabled(false);
-		ui->dumpButton->setEnabled(false);
-		ui->deleteButton->setEnabled(false);
-	} else {
-		ui->undoButton->setEnabled(true);
-		ui->dumpButton->setEnabled(true);
-		ui->deleteButton->setEnabled(true);
-	}
+    if (ui->treeWidget->selectedItems().empty()) {
+        ui->undoButton->setEnabled(false);
+        ui->dumpButton->setEnabled(false);
+        ui->deleteButton->setEnabled(false);
+    } else {
+        ui->undoButton->setEnabled(true);
+        ui->dumpButton->setEnabled(true);
+        ui->deleteButton->setEnabled(true);
+    }
 }
 
 void main_window::switch_widget() {
-	int index = (ui->stackedWidget->currentIndex() + 1) % 2;
-	ui->stackedWidget->setCurrentIndex(index);
-	switch (index) {
-	case 0:
-		ui->switchButton->setText("Go to Log and Errors");
-		break;
-	case 1:
-		ui->switchButton->setText("Go to duplicates tree");
-		break;
-	default: ;
-	}
+    int index = (ui->stackedWidget->currentIndex() + 1) % 2;
+    ui->stackedWidget->setCurrentIndex(index);
+    switch (index) {
+        case 0:
+            ui->switchButton->setText("Go to Log and Errors");
+            break;
+        case 1:
+            ui->switchButton->setText("Go to duplicates tree");
+            break;
+        default:;
+    }
 }
 
 void main_window::closeEvent(QCloseEvent *event) {
-	interrupt_thread();
-	event->accept();
+    interrupt_thread();
+    event->accept();
 }
 
 void main_window::undo_selecting() {
-	ui->treeWidget->clearSelection();
+    ui->treeWidget->clearSelection();
 }
 
 void main_window::pause_thread() {
-	ui->continueButton->setEnabled(true);
-	ui->pauseButton->setEnabled(false);
-	ui->buttonStop->setEnabled(false);
-	worker->_pause_required = true;
+    ui->continueButton->setEnabled(true);
+    ui->pauseButton->setEnabled(false);
+    ui->buttonStop->setEnabled(false);
+    worker->_pause_required = true;
 }
 
 void main_window::restart_thread() {
-	ui->continueButton->setEnabled(false);
-	ui->pauseButton->setEnabled(true);
-	ui->buttonStop->setEnabled(true);
-	worker->_pause_required = false;
-	worker->_pause_Manager.wakeAll();
+    ui->continueButton->setEnabled(false);
+    ui->pauseButton->setEnabled(true);
+    ui->buttonStop->setEnabled(true);
+    worker->_pause_required = false;
+    worker->_pause_Manager.wakeAll();
 }
 
 void main_window::error(QString err) {
-	auto* item = new QListWidgetItem();
-	QTime curr_time = QTime::currentTime();
-	item->setText(curr_time.toString("hh:mm:ss") + " err: " + err);
-	ui->listWidget->addItem(item);
+    auto *item = new QListWidgetItem();
+    QTime curr_time = QTime::currentTime();
+    item->setText(curr_time.toString("hh:mm:ss") + " err: " + err);
+    ui->listWidget->addItem(item);
 }
 
 void main_window::analyze_error(QString err) {
@@ -148,8 +149,8 @@ void main_window::analyze_error(QString err) {
 void main_window::select_directory() {
 
     _cur_dir = QFileDialog::getExistingDirectory(this, tr("Select Directory for Scanning"),
-                                                    QString(),
-                                                    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+                                                 QString(),
+                                                 QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     ui->lineEdit->setText(_cur_dir);
 }
 
@@ -162,21 +163,21 @@ void main_window::expand() {
 }
 
 void main_window::scan_directory() { //todo: add find file function
-	interrupt_thread();
+    interrupt_thread();
 
     if (!QDir(_cur_dir).exists()) {
-		ui->treeWidget->clear();
+        ui->treeWidget->clear();
         show_message("There is no such file or directory");
     } else {
         ui->treeWidget->clear();
         ui->progressBar->setValue(0);
 
-		ui->buttonStop->setEnabled(true);
-		ui->pauseButton->setEnabled(true);
-		ui->continueButton->setEnabled(false);
-		ui->selectButton->setEnabled(false);
-		ui->expand->setEnabled(false);
-		ui->collapse->setEnabled(false);
+        ui->buttonStop->setEnabled(true);
+        ui->pauseButton->setEnabled(true);
+        ui->continueButton->setEnabled(false);
+        ui->selectButton->setEnabled(false);
+        ui->expand->setEnabled(false);
+        ui->collapse->setEnabled(false);
 
         find_copies(_cur_dir);
     }
@@ -220,9 +221,9 @@ void main_window::merge_pack(MyArray pack) {
     item->setText(0, QString(tr("Found ")) + QString::number(item_size) +
                      QString(tr(" kind of ")) + QString::number(one_file_size) +
                      QString(tr(" bytes duplicates")));
-	size_t extra_space = one_file_size * files_with_size;
+    size_t extra_space = one_file_size * files_with_size;
     item->setText(1, QString::number(extra_space) + QString(tr(" bytes")));
-	_free_space += extra_space;
+    _free_space += extra_space;
     ui->treeWidget->addTopLevelItem(item);
 }
 
@@ -231,19 +232,19 @@ void main_window::save_max_bar(int val) {
 }
 
 void main_window::interrupt_thread() {
-	if (thread != nullptr && _isRunning) {
-		thread->requestInterruption();
-	}
-	_isRunning = false;
+    if (thread != nullptr && _isRunning) {
+        thread->requestInterruption();
+    }
+    _isRunning = false;
 }
 
 void main_window::find_copies(QString const &dir) {
 
-	_free_space = 0;
+    _free_space = 0;
 
-	ui->treeWidget->clear();
+    ui->treeWidget->clear();
 
-	_isRunning = true;
+    _isRunning = true;
     ui->statusBar->showMessage(tr("Searching for copies..."));
     _timeIn = clock();
     thread = new QThread;
@@ -265,53 +266,49 @@ void main_window::find_copies(QString const &dir) {
 }
 
 void main_window::dump_selected() {
-	if (ui->treeWidget->selectedItems().isEmpty()) {
-		QMessageBox msgBox;
-		msgBox.setText("No chosen files");
-		msgBox.exec();
-	}
-	else {
-		try {
-			if (dump_window->exec() == QDialog::Accepted) {
-				 _dir_to_dump = dump_window->ui->lineEdit->text();
-				 if (_dir_to_dump != "") {
-					 if (!QDir(_dir_to_dump).exists()) {
-						 show_message("There is no such file or directory");
-					 } else {
-						 QString path_to_file = _dir_to_dump + _file_dump_name;
-						 QFile file(path_to_file);
-						 if (file.open(QIODevice::WriteOnly))
-						 {
-							 QTextStream stream(&file);
-							 for (auto u : ui->treeWidget->selectedItems()) {
-								 stream << u->text(0) << "\r\n";
-							 }
-						 }
-						 else {
-							 throw std::runtime_error("can't make file in this directory");
-						 }
-					 }
-				 }
-				 else {
-					 show_message("empty directory");
-				 }
-			}
-		}
-		catch (std::exception& ex) {
-			error(ex.what());
-		}
-	}
+    if (ui->treeWidget->selectedItems().isEmpty()) {
+        QMessageBox msgBox;
+        msgBox.setText("No chosen files");
+        msgBox.exec();
+    } else {
+        try {
+            if (dump_window->exec() == QDialog::Accepted) {
+                _dir_to_dump = dump_window->ui->lineEdit->text();
+                if (_dir_to_dump != "") {
+                    if (!QDir(_dir_to_dump).exists()) {
+                        show_message("There is no such file or directory");
+                    } else {
+                        QString path_to_file = _dir_to_dump + _file_dump_name;
+                        QFile file(path_to_file);
+                        if (file.open(QIODevice::WriteOnly)) {
+                            QTextStream stream(&file);
+                            for (auto u : ui->treeWidget->selectedItems()) {
+                                stream << u->text(0) << "\r\n";
+                            }
+                        } else {
+                            throw std::runtime_error("can't make file in this directory");
+                        }
+                    }
+                } else {
+                    show_message("empty directory");
+                }
+            }
+        }
+        catch (std::exception &ex) {
+            error(ex.what());
+        }
+    }
 }
 
 void main_window::scan_has_finished() {
-	_isRunning = false;
+    _isRunning = false;
 
     ui->selectButton->setEnabled(true);
     ui->buttonStop->setEnabled(false);
     ui->collapse->setEnabled(true);
     ui->expand->setEnabled(true);
-	ui->pauseButton->setEnabled(false);
-	ui->continueButton->setEnabled(false);
+    ui->pauseButton->setEnabled(false);
+    ui->continueButton->setEnabled(false);
 
     if (ui->treeWidget->topLevelItemCount() == 0) {
         show_message(QString(tr("no copies here or there were errors \ncheck out log to see more information")));
@@ -319,14 +316,15 @@ void main_window::scan_has_finished() {
     clock_t timeOut = clock();
     double timeSpent = ((timeOut - _timeIn) * 1000) / CLOCKS_PER_SEC; //NOLINT
 
-	//TODO: add like QString.args
+    //TODO: add like QString.args
     ui->statusBar->showMessage(tr("Time spent ") + QString::number(timeSpent) + tr("ms") +
-    " - " + QString::number(timeSpent / 1000) + tr("sec  ") + "|  Free space after deleting " + QString::number(_free_space) + tr(" bytes") +
-	tr(" or ") +  QString::number(_free_space / 100'000'0) + "Mb ");
+                               " - " + QString::number(timeSpent / 1000) + tr("sec  ") +
+                               "|  Free space after deleting " + QString::number(_free_space) + tr(" bytes") +
+                               tr(" or ") + QString::number(_free_space / 1000000) + "Mb ");
 }
 
 void main_window::select_all_extra_files() {
-	//make with invisible root, try to speed up
+    //make with invisible root, try to speed up
     for (int i = 0; i < ui->treeWidget->topLevelItemCount(); ++i) {
         auto *top_item = ui->treeWidget->topLevelItem(i);
         for (int j = 0; j < top_item->childCount(); j++) {
@@ -339,27 +337,27 @@ void main_window::select_all_extra_files() {
 }
 
 void main_window::delete_copies() {
-	if (ui->treeWidget->selectedItems().isEmpty()) {
-		QMessageBox msgBox;
-		msgBox.setText("No chosen files");
-		msgBox.exec();
-	} else {
-		QMessageBox::StandardButton reply = QMessageBox::question(this, "Delete copies",
-			"Are you sure? \nFiles will be permanently removed",
-			QMessageBox::Yes | QMessageBox::No);
-		if (reply == QMessageBox::Yes) {
-			QVector<QString> paths;
-			for (auto u : ui->treeWidget->selectedItems()) {
-				paths.push_back(u->text(0));
-				u->~QTreeWidgetItem();
-			}
-			for (int i = 0; i < paths.size(); i++) {
-				QFile(paths[i]).remove();
-			}
-		} else {
-			//do nothing
-		}
-	}
+    if (ui->treeWidget->selectedItems().isEmpty()) {
+        QMessageBox msgBox;
+        msgBox.setText("No chosen files");
+        msgBox.exec();
+    } else {
+        QMessageBox::StandardButton reply = QMessageBox::question(this, "Delete copies",
+                                                                  "Are you sure? \nFiles will be permanently removed",
+                                                                  QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            QVector<QString> paths;
+            for (auto u : ui->treeWidget->selectedItems()) {
+                paths.push_back(u->text(0));
+                u->~QTreeWidgetItem();
+            }
+            for (int i = 0; i < paths.size(); i++) {
+                QFile(paths[i]).remove();
+            }
+        } else {
+            //do nothing
+        }
+    }
 }
 
 void main_window::show_about_dialog() {

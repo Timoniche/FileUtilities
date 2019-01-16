@@ -3,11 +3,12 @@
 #include <QCryptographicHash>
 
 const int gap_point = 6;
+
 #include <QThread>
 
 namespace {
     struct cancellation_exception : std::exception {
-        const char* what() const noexcept override {
+        const char *what() const noexcept override {
             return "Process interrupted";
         }
     };
@@ -20,11 +21,11 @@ void binary_tree::build_final_tree(std::vector<std::ifstream> &streams, std::vec
         if (thread->isInterruptionRequested()) {
             throw cancellation_exception();
         }
-		if (worker_from->_pause_required) {
-			worker_from->_continue.lock();
-			worker_from->_pause_Manager.wait(&worker_from->_continue);
-			worker_from->_continue.unlock();
-		}
+        if (worker_from->_pause_required) {
+            worker_from->_continue.lock();
+            worker_from->_pause_Manager.wait(&worker_from->_continue);
+            worker_from->_continue.unlock();
+        }
     };
 
 

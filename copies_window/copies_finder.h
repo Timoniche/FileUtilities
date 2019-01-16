@@ -16,10 +16,10 @@
 typedef std::vector<std::vector<std::string> > MyArray;
 
 class copies_finder : public QObject {
-    Q_OBJECT
+Q_OBJECT
 
 public:
-    explicit copies_finder(QString dir) : _dir(std::move(dir)){}
+    explicit copies_finder(QString dir) : _dir(std::move(dir)) {}
 
 public slots:
 
@@ -37,7 +37,7 @@ signals:
 
     void error(QString err);
 
-	void log(QString l);
+    void log(QString l);
 
 private:
     QString _dir;
@@ -46,9 +46,9 @@ private:
 
 //TODO: make it private
 public:
-	QWaitCondition _pause_Manager;
-	QMutex _continue;
-	bool _pause_required = false;
+    QWaitCondition _pause_Manager;
+    QMutex _continue;
+    bool _pause_required = false;
 };
 
 
