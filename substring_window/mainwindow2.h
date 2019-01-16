@@ -80,7 +80,7 @@ private:
 	clock_t _timeIn = 0;
 	QStringList _filters;
 	bool _isRunning = false;
-	std::atomic_bool is_indexing = false;
+    std::atomic_bool is_indexing{false};
 
 	std::set<FilesTrigram, FilesTrigram::cmp> _filesTrigrams;
 	std::unique_ptr<Ui::MainWindow1> ui;

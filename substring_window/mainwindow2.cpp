@@ -134,6 +134,7 @@ void subStringFinder::buttons_control()
 
 void subStringFinder::closeEvent(QCloseEvent *event) {
 	interrupt_thread();
+    stop_indexing();
 	event->accept();
 }
 
@@ -319,6 +320,9 @@ void subStringFinder::collapse() {
 }
 
 void subStringFinder::indexing_has_finished(QString dir) {
+    if (!is_indexing) {
+        return;
+    }
 	is_indexing = false;
     ui->indexStopButton->setEnabled(false);
 	size_t cur_size = _filesTrigrams.size();
@@ -355,8 +359,9 @@ void subStringFinder::start_indexing(QString dir) {
     std::function<FilesTrigram(std::string)> f = [this](std::string s) -> FilesTrigram
 	{
         //if error occurs here -> isValid = false;
+        FilesTrigram ft (s, &is_indexing);
         emit increase_index_bar(1);
-        return FilesTrigram(s, &is_indexing);
+        return ft;
 	};
 
 	index_map = QtConcurrent::mapped(files_push_to_trigrams, f);

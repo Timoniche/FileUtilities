@@ -22,6 +22,8 @@ FilesTrigram::FilesTrigram(std::string const & file_name) :
             }
             else {
                 if (cur_line.size() > BUFFER_LINE_SIZE) {
+                    isValid = false;
+                    return;
                     //throw exc
                     //increase BUFFER_LINE_SIZE in preferences
                     //some data could be lost - continue?
@@ -34,7 +36,7 @@ FilesTrigram::FilesTrigram(std::string const & file_name) :
     }
 }
 
-FilesTrigram::FilesTrigram(std::string const & file_name, std::atomic_bool const* indexing) :
+FilesTrigram::FilesTrigram(std::string const & file_name, std::atomic_bool * indexing) :
     _file_name(file_name),
     _indexing(indexing)
 {
@@ -57,12 +59,14 @@ FilesTrigram::FilesTrigram(std::string const & file_name, std::atomic_bool const
 			}
 			else {
 				if (cur_line.size() > BUFFER_LINE_SIZE) {
+                    isValid = false;
+                    return;
 					//throw exc
 					//increase BUFFER_LINE_SIZE in preferences
 					//some data could be lost - continue?
 				}
 				else {
-					splitStringToTrigram(cur_line, trigrams);
+                    splitStringToTrigram(cur_line, trigrams, indexing);
 				}
 			}
 		}
@@ -72,13 +76,16 @@ FilesTrigram::FilesTrigram(std::string const & file_name, std::atomic_bool const
 FilesTrigram::~FilesTrigram() = default;
 
 //Pre: size [3; BUFFER_LINE_SIZE]
-void FilesTrigram::splitStringToTrigram(std::string const & s, std::set<uint32_t>& trSet) {
+void FilesTrigram::splitStringToTrigram(std::string const & s, std::set<uint32_t>& trSet, std::atomic_bool * _indexing) {
 	//string to utf8?
 	//QString qs = QString::fromStdString(s);
 	//qs.toUtf8().constData();
 	//now without validation
     uint32_t curTrigram = static_cast<uint32_t>(static_cast<uint8_t>(s[0]) << 8) | (static_cast<uint8_t>(s[1]));
 	for (size_t i = 2; i < s.length(); i++) {
+        if (_indexing != nullptr && !_indexing) {
+            return;
+        }
 		curTrigram &= 0xFFFF; // clear first (head) 16 bits
 		curTrigram <<= 8;
 		curTrigram |= static_cast<uint8_t>(s[i]);
