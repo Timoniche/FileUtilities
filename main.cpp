@@ -7,8 +7,7 @@ int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
-	welcome_window w;
-    //main_window w;
+    welcome_window w;
     w.show();
 
     return QApplication::exec();

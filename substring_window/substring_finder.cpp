@@ -49,6 +49,7 @@ void substring_finder::process_impl(std::string const& pattern, std::set<FilesTr
 				std::string cur_line;
 				QString name = file.get_qstring_name();
 				if (!stream.is_open()) {
+                    emit push_to_log(QString("Can't open ") + name);
 					//throw std::runtime_error("Can't open one file");
 				}
 				int row = 0;

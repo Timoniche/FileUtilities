@@ -15,29 +15,29 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QCheckBox" name="chooseAll">
+     <property name="text">
+      <string>Choose all</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="resetAll">
+     <property name="text">
+      <string>Reset all</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>filters</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="err">
-        <property name="text">
-         <string>.err</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QCheckBox" name="log">
         <property name="text">
          <string>.log</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QCheckBox" name="ttf">
-        <property name="text">
-         <string>.ttf</string>
         </property>
        </widget>
       </item>
@@ -48,10 +48,17 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QCheckBox" name="sub">
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="pwi">
         <property name="text">
-         <string>.sub</string>
+         <string>.pwi</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QCheckBox" name="apt">
+        <property name="text">
+         <string>.apt</string>
         </property>
        </widget>
       </item>
@@ -62,10 +69,17 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QCheckBox" name="pwi">
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="err">
         <property name="text">
-         <string>.pwi</string>
+         <string>.err</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="ttf">
+        <property name="text">
+         <string>.ttf</string>
         </property>
        </widget>
       </item>
@@ -76,10 +90,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QCheckBox" name="apt">
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="sub">
         <property name="text">
-         <string>.apt</string>
+         <string>.sub</string>
         </property>
        </widget>
       </item>

@@ -44,6 +44,7 @@ signals:
 	void indexing_finishing(QString dir);
     void increase_index_bar(int val);
     void send_max_index_bar(int val);
+    void to_log(QString l);
 
 private slots:
 
@@ -72,6 +73,10 @@ private slots:
     void stop_indexing();
     void set_max_index_bar(int val);
     void update_increase_bar(int val);
+    void clear_log();
+    void dump_log();
+
+    void analyze_log(QString l);
 
 protected:
 	void closeEvent(QCloseEvent *event) override;

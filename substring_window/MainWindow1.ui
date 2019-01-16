@@ -31,21 +31,17 @@
         </item>
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QPushButton" name="addFileButton">
-            <property name="text">
-             <string>ADD FILE</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="addDirButton">
-            <property name="text">
-             <string>ADD DIR</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="0">
+           <widget class="QPushButton" name="undoButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Undo Selected</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
            <widget class="QPushButton" name="expandButton">
             <property name="enabled">
              <bool>false</bool>
@@ -56,32 +52,22 @@
            </widget>
           </item>
           <item row="1" column="1">
+           <widget class="QPushButton" name="dumpButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Dump tree</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
            <widget class="QPushButton" name="collapseButton">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="text">
              <string>Collapse all</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QPushButton" name="undoButton">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Undo Selected</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QPushButton" name="dumpButton">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Dump</string>
             </property>
            </widget>
           </item>
@@ -146,7 +132,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Continue</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -156,7 +142,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Pause</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -166,7 +152,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Stop</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -200,6 +186,23 @@
             <item>
              <widget class="QListWidget" name="listWidget"/>
             </item>
+            <item>
+             <widget class="QPushButton" name="logDumpButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Dump log</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="clearLogButton">
+              <property name="text">
+               <string>Clear log</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -223,7 +226,7 @@
      <x>0</x>
      <y>0</y>
      <width>833</width>
-     <height>18</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menupreferences">
@@ -232,12 +235,43 @@
     </property>
     <addaction name="actionchoose_filters"/>
    </widget>
+   <widget class="QMenu" name="menuindexing">
+    <property name="title">
+     <string>indexing</string>
+    </property>
+    <addaction name="action_open_dir"/>
+    <addaction name="action_open_file"/>
+   </widget>
    <addaction name="menupreferences"/>
+   <addaction name="menuindexing"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_open_dir"/>
+   <addaction name="action_open_file"/>
+  </widget>
   <action name="actionchoose_filters">
    <property name="text">
     <string>choose filters</string>
+   </property>
+  </action>
+  <action name="action_open_dir">
+   <property name="text">
+    <string>_open_dir</string>
+   </property>
+  </action>
+  <action name="action_open_file">
+   <property name="text">
+    <string>_open_file</string>
    </property>
   </action>
  </widget>

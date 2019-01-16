@@ -9,6 +9,9 @@
 
 #include <QCommonStyle>
 #include <QDesktopWidget>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QGraphicsPixmapItem>
 
 welcome_window::welcome_window(QWidget *parent) :
 	QWidget(parent),
@@ -20,6 +23,12 @@ welcome_window::welcome_window(QWidget *parent) :
 	setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
 		qApp->desktop()->availableGeometry()));
 
+    QPixmap bkgnd(":/images/welcome.jpg");
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
+    this->setFixedSize(this->width(),this->height());
 	connect(ui->pushButton, &QPushButton::clicked, this, &welcome_window::go);
 }
 

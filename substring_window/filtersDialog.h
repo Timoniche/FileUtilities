@@ -15,7 +15,8 @@ class filtersDialog : public QDialog
 		friend class subStringFinder;
 
 private slots:
-
+    void choose_all(int index);
+    void reset_all(int index);
 
 public:
 	explicit filtersDialog(QWidget *parent = nullptr);

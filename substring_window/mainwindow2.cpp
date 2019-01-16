@@ -16,6 +16,7 @@
 #include <QtConcurrent/QtConcurrentMap>
 #include "my_functions.h"
 #include <functional>
+#include <QCommonStyle>
 
 //#include <boost/tokenizer.hpp>
 
@@ -40,9 +41,16 @@ subStringFinder::subStringFinder(QWidget *parent) :
 
 	ui->fileList->setSelectionMode(QAbstractItemView::MultiSelection);
 
-	connect(ui->addFileButton, &QPushButton::clicked, this, &subStringFinder::add_path);
+    QCommonStyle style;
+    ui->stopButton->setIcon(style.standardIcon(QCommonStyle::SP_MediaStop));
+    ui->continueButton->setIcon(style.standardIcon(QCommonStyle::SP_MediaPlay));
+    ui->pauseButton->setIcon(style.standardIcon(QCommonStyle::SP_MediaPause));
+    ui->action_open_dir->setIcon(style.standardIcon(QCommonStyle::SP_DialogOpenButton));
+    ui->action_open_file->setIcon(style.standardIcon(QCommonStyle::SP_FileIcon));
+
+    connect(ui->action_open_file, &QAction::triggered, this, &subStringFinder::add_path);
 	connect(ui->searchButton, &QPushButton::clicked, this, &subStringFinder::search);
-	connect(ui->addDirButton, &QPushButton::clicked, this, &subStringFinder::add_dir);
+    connect(ui->action_open_dir, &QAction::triggered, this, &subStringFinder::add_dir);
 	connect(ui->expandButton, &QPushButton::clicked, this, &subStringFinder::expand);
 	connect(ui->collapseButton, &QPushButton::clicked, this, &subStringFinder::collapse);
 	connect(ui->removeButton, &QPushButton::clicked, this, &subStringFinder::remove_selected);
@@ -60,10 +68,14 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	connect(ui->treeWidget, SIGNAL(itemSelectionChanged()), this, SLOT(buttons_control()));
     connect(ui->fileList, SIGNAL(itemSelectionChanged()), this, SLOT(list_buttons_control()));
     connect(ui->indexStopButton, SIGNAL(clicked()), this, SLOT(stop_indexing()));
+    connect(this, SIGNAL(to_log(QString)), this, SLOT(analyze_log(QString)));
+    connect(ui->clearLogButton, SIGNAL(clicked()), this, SLOT(clear_log()));
+    connect(ui->logDumpButton, SIGNAL(clicked()), this, SLOT(dump_log()));
 
 	connect(this, SIGNAL(indexing_finishing(QString)), this, SLOT(indexing_has_finished(QString)));
     connect(this, SIGNAL(increase_index_bar(int)), this, SLOT(update_increase_bar(int)));
     connect(this, SIGNAL(send_max_index_bar(int)), this, SLOT(set_max_index_bar(int)));
+
 
 	qRegisterMetaType<MyArray2>("MyArray2");
 	qRegisterMetaType<std::string>("std::string");
@@ -73,6 +85,21 @@ subStringFinder::subStringFinder(QWidget *parent) :
 	connect(fsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
 
 	show_filters();
+}
+
+void subStringFinder::dump_log() {
+    //
+}
+
+void subStringFinder::clear_log() {
+    ui->listWidget->clear();
+}
+
+void subStringFinder::analyze_log(QString l) {
+    auto* item = new QListWidgetItem();
+    QTime curr_time = QTime::currentTime();
+    item->setText(curr_time.toString("hh:mm:ss") + " log: " + l);
+    ui->listWidget->addItem(item);
 }
 
 void subStringFinder::set_max_index_bar(int val) {
@@ -86,6 +113,7 @@ void subStringFinder::update_increase_bar(int val) {
 void subStringFinder::stop_indexing() {
     if (is_indexing) {
         is_indexing = false;
+        emit to_log("Indexing interrupted");
         index_map.cancel();
         future.waitForFinished();
         tmp_trigram_list.clear();
@@ -267,9 +295,10 @@ void subStringFinder::restart_thread() {
 }
 
 void subStringFinder::error(QString err) {
-	auto *item = new QTreeWidgetItem(ui->treeWidget);
-	item->setText(0, err);
-	ui->treeWidget->addTopLevelItem(item);
+    auto* item = new QListWidgetItem();
+    QTime curr_time = QTime::currentTime();
+    item->setText(curr_time.toString("hh:mm:ss") + " err: " + err);
+    ui->listWidget->addItem(item);
 }
 
 void subStringFinder::analyze_error(QString err) {
@@ -355,12 +384,15 @@ void subStringFinder::start_indexing(QString dir) {
         if (QFileInfo(cur_path).size() == 0) { continue; }
 		files_push_to_trigrams.insert(cur_path.toStdString());
 	}
-    emit send_max_index_bar(files_push_to_trigrams.size());
+    emit send_max_index_bar(static_cast<int>(files_push_to_trigrams.size()));
     std::function<FilesTrigram(std::string)> f = [this](std::string s) -> FilesTrigram
 	{
         //if error occurs here -> isValid = false;
         FilesTrigram ft (s, &is_indexing);
         emit increase_index_bar(1);
+        if (!ft.isValid) {
+            emit to_log(QString("Can't open ") + QString::fromStdString(s));
+        }
         return ft;
 	};
 
@@ -436,6 +468,7 @@ void subStringFinder::search() {
 	connect(worker, SIGNAL(increase_bar(int)), this, SLOT(update_bar(int)));
 	connect(worker, SIGNAL(update_tree(MyArray2)), this, SLOT(merge_pack(MyArray2)));
 	connect(worker, SIGNAL(error(QString)), this, SLOT(analyze_error(QString)));
+    connect(worker, SIGNAL(push_to_log(QString)), this, SLOT(analyze_log(QString)));
 
 	connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
 	connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));

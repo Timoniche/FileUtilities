@@ -37,6 +37,8 @@ signals:
 
 	void error(QString err);
 
+    void push_to_log(QString l);
+
 private:
 
 	void process_impl(std::string const& pattern, std::set<FilesTrigram, FilesTrigram::cmp> const * files_trigrams);
