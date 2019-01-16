@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-3")
 set(CMAKE_PREFIX_PATH "/Users/ddulaev/Qt/5.11.2/clang_64/lib/cmake")
 #set(CMAKE_PREFIX_PATH "C:/Qt/5.12.0/winrt_x86_msvc2017/bin")
 
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)

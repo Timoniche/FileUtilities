@@ -72,7 +72,7 @@ void copies_finder::process_impl() {
 
             //not to open so many streams at one time
             std::map<std::vector<char>, std::vector<int>> mapa;
-            for (int i = 0; i < u.second.size(); ++i) {
+            for (int i = 0; i < static_cast<int>(u.second.size()); ++i) {
                 std::array<char, 100> buf_from{};
                 std::vector<char> buf;
                 std::ifstream stream_initial(u.second[i], std::ios::binary);
@@ -81,7 +81,7 @@ void copies_finder::process_impl() {
                     continue;
                 }
                 stream_initial.read(buf_from.data(), buf_from.size());
-                size_t gcount = stream_initial.gcount();
+                size_t gcount = static_cast<size_t>(stream_initial.gcount()); //NOLINT
                 for (size_t j = 0; j < gcount; ++j) {
                     buf.push_back(buf_from[j]);
                 }

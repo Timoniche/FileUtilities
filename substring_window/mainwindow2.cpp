@@ -17,7 +17,6 @@
 #include "my_functions.h"
 #include <functional>
 #include <QCommonStyle>
-
 //#include <boost/tokenizer.hpp>
 
 
@@ -25,7 +24,8 @@
 subStringFinder::subStringFinder(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow1),
-        filtersWindow(new filtersDialog(this)) {
+        filtersWindow(new filtersDialog(this)),
+        fsWatcher(new QFileSystemWatcher(this)) {
 
     ui->setupUi(this);
     filtersWindow->setWindowModality(Qt::WindowModality::WindowModal);
@@ -82,8 +82,7 @@ subStringFinder::subStringFinder(QWidget *parent) :
     qRegisterMetaType<std::string>("std::string");
     qRegisterMetaType<std::set<FilesTrigram, FilesTrigram::cmp>>("std::set<FilesTrigram, FilesTrigram::cmp>");
 
-    fsWatcher = new QFileSystemWatcher(this);
-    connect(fsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
+    connect(fsWatcher.get(), SIGNAL(fileChanged(QString)), this, SLOT(changed(QString)));
 
     show_filters();
 }
@@ -123,11 +122,7 @@ void subStringFinder::stop_indexing() {
 }
 
 void subStringFinder::list_buttons_control() {
-    if (ui->fileList->selectedItems().empty()) {
-        ui->removeButton->setEnabled(false);
-    } else {
-        ui->removeButton->setEnabled(true);
-    }
+    ui->removeButton->setEnabled(!ui->fileList->selectedItems().empty());
 }
 
 void subStringFinder::undo_selecting() {
@@ -203,7 +198,7 @@ void subStringFinder::show_filters() {
 
             QListIterator<QObject *> i(filtersWindow->ui->groupBox->children());
             while (i.hasNext()) {
-                QCheckBox *b = qobject_cast<QCheckBox *>(i.next());
+                auto *b = qobject_cast<QCheckBox *>(i.next());
                 if (b != nullptr && b->isChecked()) {
                     std::string tmp = '*' + b->text().toStdString();
                     _filters << tmp.c_str();
@@ -429,7 +424,7 @@ void subStringFinder::add_path() {
 void subStringFinder::search() {
     interrupt_thread();
     std::string pattern = ui->lineEdit->text().toStdString();
-    if (_filesTrigrams.empty() || pattern == "") return;
+    if (_filesTrigrams.empty() || pattern.empty()) return;
 
     ui->statusBar->showMessage(tr("Searching substring..."));
     ui->progressBar->setValue(0);

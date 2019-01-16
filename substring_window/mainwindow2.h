@@ -124,7 +124,7 @@ private:
     std::unique_ptr<filtersDialog> filtersWindow;
     std::set<std::string> changed_files;
 
-    QFileSystemWatcher *fsWatcher;
+    std::unique_ptr<QFileSystemWatcher> fsWatcher;
 
     void error(QString err);
 

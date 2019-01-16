@@ -38,7 +38,7 @@ void binary_tree::build_final_tree(std::vector<std::ifstream> &streams, std::vec
         for (int fNumber : *fNumbers) {
             auto index = static_cast<size_t>(fNumber);
             streams[index].read(buffer.data(), buffer.size());
-            gcount = streams[index].gcount();
+            gcount = static_cast<size_t>(streams[index].gcount());
             auto iter = Map.find(buffer);
             if (iter == Map.end()) {
                 std::vector<int> v(1, fNumber);
@@ -89,7 +89,7 @@ void binary_tree::build_final_tree(std::vector<std::ifstream> &streams, std::vec
 
             auto index = static_cast<size_t>(fNumber);
             streams[index].read(buffer.data(), buffer.size());
-            gcount = streams[index].gcount();
+            gcount = static_cast<size_t>(streams[index].gcount());
 
             sha.addData(buffer.data(), static_cast<int>(gcount));
             QByteArray res = sha.result();
@@ -143,7 +143,7 @@ void binary_tree::build_final_tree(std::vector<std::ifstream> &streams, std::vec
 }
 
 bool binary_tree::is_two_files_equal(int file_1, int file_2, std::vector<std::ifstream> &streams) {
-    auto cancellation_point = [thread = QThread::currentThread(), this]() {
+    auto cancellation_point = [thread = QThread::currentThread()]() {
         if (thread->isInterruptionRequested()) {
             throw cancellation_exception();
         }

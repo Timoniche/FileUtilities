@@ -4,6 +4,7 @@
 #include <set>
 #include <QString>
 #include <QFileInfo>
+#include <atomic>
 
 class FilesTrigram {
 
@@ -22,8 +23,8 @@ public:
 
     struct cmp {
         bool operator()(FilesTrigram const &lhs, FilesTrigram const &rhs) const {
-            size_t size_lhs = QFileInfo(lhs.get_qstring_name()).size();
-            size_t size_rhs = QFileInfo(rhs.get_qstring_name()).size();
+            size_t size_lhs = static_cast<size_t>(QFileInfo(lhs.get_qstring_name()).size());
+            size_t size_rhs = static_cast<size_t>(QFileInfo(rhs.get_qstring_name()).size());
             if (size_lhs == size_rhs) {
                 return lhs.get_string_name() < rhs.get_string_name();
             } else {

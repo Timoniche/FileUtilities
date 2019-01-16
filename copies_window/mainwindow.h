@@ -84,7 +84,7 @@ private:
 
     clock_t _timeIn{};
 
-    bool _help_mode = false;
+    //bool _help_mode = false;
 
     std::unique_ptr<Ui::MainWindow> ui;
 
