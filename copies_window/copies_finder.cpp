@@ -33,11 +33,11 @@ void copies_finder::process_impl() {
 
         };
 
-        auto get_sha256hash = [&](std::string const& path) {
+        auto get_sha256hash = [&](std::string const &path) {
             std::array<char, 8192> buffer{};
             std::ifstream fin(path, std::ios::binary);
             if (!fin.is_open()) {
-                 emit log(QString(tr("Can't open one file ")) + QString::fromStdString(path));
+                emit log(QString(tr("Can't open one file ")) + QString::fromStdString(path));
             }
             QCryptographicHash hash(QCryptographicHash::Sha256);
             int gcount = 0;
@@ -46,8 +46,7 @@ void copies_finder::process_impl() {
                 fin.read(buffer.data(), buffer.size());
                 gcount = static_cast<int>(fin.gcount());
                 hash.addData(buffer.data(), gcount);
-            }
-            while (gcount > 0);
+            } while (gcount > 0);
             return hash.result();
         };
 
@@ -117,10 +116,10 @@ void copies_finder::process_impl() {
                 if (paths_numbers.second.size() < 2) { continue; }
                 cancellation_point();
                 for (auto file_number : paths_numbers.second) {
-                    auto hash = get_sha256hash(u.second[static_cast<size_t>(file_number)]);
-                    auto iterator = result_map.find(hash);
+                    auto byte_array = get_sha256hash(u.second[static_cast<size_t>(file_number)]);
+                    auto iterator = result_map.find(byte_array);
                     if (iterator == result_map.end()) {
-                        result_map.insert({hash, {file_number}});
+                        result_map.insert({byte_array, {file_number}});
                     } else {
                         iterator->second.push_back(file_number);
                     }
