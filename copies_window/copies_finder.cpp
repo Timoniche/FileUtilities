@@ -5,6 +5,7 @@
 #include <QDirIterator>
 #include <QThread>
 #include <array>
+#include <QCryptographicHash>
 
 namespace {
 
@@ -18,7 +19,7 @@ namespace {
 
 void copies_finder::process_impl() {
     try {
-        binary_tree Tree(this);
+        //binary_tree Tree(this);
         auto cancellation_point = [thread = QThread::currentThread(), this]() {
             if (thread->isInterruptionRequested()) {
                 throw cancellation_exception();
@@ -30,6 +31,24 @@ void copies_finder::process_impl() {
                 _continue.unlock();
             }
 
+        };
+
+        auto get_sha256hash = [&](std::string const& path) {
+            std::array<char, 8192> buffer{};
+            std::ifstream fin(path, std::ios::binary);
+            if (!fin.is_open()) {
+                 emit log(QString(tr("Can't open one file ")) + QString::fromStdString(path));
+            }
+            QCryptographicHash hash(QCryptographicHash::Sha256);
+            int gcount = 0;
+            do {
+                cancellation_point();
+                fin.read(buffer.data(), buffer.size());
+                gcount = static_cast<int>(fin.gcount());
+                hash.addData(buffer.data(), gcount);
+            }
+            while (gcount > 0);
+            return hash.result();
         };
 
         QDirIterator it(_dir, QDir::Hidden | QDir::Files, QDirIterator::Subdirectories);
@@ -44,7 +63,6 @@ void copies_finder::process_impl() {
         emit set_max_bar(count_of_files);
 
         std::map<size_t, std::vector<std::string>> grouping_files_by_size;
-
         for (const auto &path : files_path) {
             cancellation_point();
             size_t size = static_cast<size_t>((QFileInfo(QString::fromStdString(path))).size());
@@ -70,62 +88,55 @@ void copies_finder::process_impl() {
 
             std::vector<std::vector<std::string>> ANS;
 
-            //not to open so many streams at one time
-            std::map<std::vector<char>, std::vector<int>> mapa;
+            std::map<QByteArray, std::vector<int>> first_hundred_bytes_hash;
+            QCryptographicHash hash(QCryptographicHash::Sha256);
             for (int i = 0; i < static_cast<int>(u.second.size()); ++i) {
-                std::array<char, 100> buf_from{};
-                std::vector<char> buf;
+                cancellation_point();
+                std::array<char, 100> buf{};
                 std::ifstream stream_initial(u.second[i], std::ios::binary);
                 if (!stream_initial.is_open()) {
                     emit log(QString(tr("Can't open one file ")) + QString::fromStdString(u.second[i]));
                     continue;
                 }
-                stream_initial.read(buf_from.data(), buf_from.size());
+                stream_initial.read(buf.data(), buf.size());
                 size_t gcount = static_cast<size_t>(stream_initial.gcount()); //NOLINT
-                for (size_t j = 0; j < gcount; ++j) {
-                    buf.push_back(buf_from[j]);
-                }
-                auto iterator = mapa.find(buf);
-                if (iterator == mapa.end()) {
-                    mapa.insert({buf, {i}});
+                hash.addData(buf.data(), static_cast<int>(gcount));
+                QByteArray res = hash.result();
+                hash.reset();
+                auto iterator = first_hundred_bytes_hash.find(res);
+                if (iterator == first_hundred_bytes_hash.end()) {
+                    first_hundred_bytes_hash.insert({res, {i}});
                 } else {
                     iterator->second.push_back(i);
                 }
                 stream_initial.close();
             }
 
-            size_t item_size = 0;
-            std::vector<std::ifstream> streams(u.second.size());
-            for (auto &paths_numbers : mapa) {
+            std::map<QByteArray, std::vector<int>> result_map;
+            for (auto &paths_numbers : first_hundred_bytes_hash) {
+                if (paths_numbers.second.size() < 2) { continue; }
                 cancellation_point();
-                for (auto &path_number : paths_numbers.second) {
-                    std::ifstream fin(u.second[path_number], std::ios::binary);
-                    if (!fin.is_open()) {
-                        throw std::runtime_error("Can't open one more stream");
-                    }
-                    streams[path_number] = std::move(fin);
-                }
-                std::vector<std::vector<int>> ans;
-                Tree.build_final_tree(streams, &paths_numbers.second, ans, 0);
-
-                item_size += ans.size();
-                for (auto &path_number : paths_numbers.second) {
-                    if (streams[path_number].is_open()) {
-                        streams[path_number].close();
+                for (auto file_number : paths_numbers.second) {
+                    auto hash = get_sha256hash(u.second[static_cast<size_t>(file_number)]);
+                    auto iterator = result_map.find(hash);
+                    if (iterator == result_map.end()) {
+                        result_map.insert({hash, {file_number}});
+                    } else {
+                        iterator->second.push_back(file_number);
                     }
                 }
-                std::vector<std::vector<std::string>> ans_to_merge;
-                for (const auto &p : ans) {
-                    std::vector<std::string> temp;
-                    for (auto p2 : p) {
-                        temp.push_back(u.second[p2]);
-                    }
-                    ans_to_merge.push_back(std::move(temp));
-                }
-                ANS.insert(ANS.end(), std::make_move_iterator(ans_to_merge.begin()),
-                           std::make_move_iterator(ans_to_merge.end()));
-
             }
+
+            for (auto &paths_numbers : result_map) {
+                cancellation_point();
+                if (paths_numbers.second.size() < 2) { continue; }
+                std::vector<std::string> temp;
+                for (auto file_number : paths_numbers.second) {
+                    temp.push_back(u.second[file_number]);
+                }
+                ANS.push_back(std::move(temp));
+            }
+
             if (!ANS.empty()) {
                 emit update_tree(ANS);
             }

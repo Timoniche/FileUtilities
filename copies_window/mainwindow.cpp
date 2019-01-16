@@ -256,7 +256,7 @@ void main_window::find_copies(QString const &dir) {
     connect(worker, SIGNAL(increase_bar(int)), this, SLOT(update_bar(int)));
     connect(worker, SIGNAL(update_tree(MyArray)), this, SLOT(merge_pack(MyArray)));
     connect(worker, SIGNAL(error(QString)), this, SLOT(analyze_error(QString)));
-    connect(worker, SIGNAL(log(QStirng)), this, SLOT(analyze_log(QString)));
+    connect(worker, SIGNAL(log(QString)), this, SLOT(analyze_log(QString)));
 
     connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
