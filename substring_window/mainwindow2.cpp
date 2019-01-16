@@ -31,6 +31,8 @@ subStringFinder::subStringFinder(QWidget *parent) :
     filtersWindow->setWindowModality(Qt::WindowModality::WindowModal);
     setWindowTitle("substring finder");
 
+    ui->treeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    ui->treeWidget->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     //ui->splitter->setStretchFactor(0, 2);
     //ui->splitter_2->setStretchFactor(1, 2);
     ui->progressBar->setValue(0);
@@ -259,15 +261,19 @@ void subStringFinder::merge_pack(MyArray2 pack) {
     if (!pack.second.empty()) {
         auto *file_item = new QTreeWidgetItem();
         file_item->setText(0, QString::fromStdString(pack.first));
+        size_t matches = 0;
         for (auto in_file : pack.second) {
-            auto *item = new QTreeWidgetItem(file_item); \
+            auto *item = new QTreeWidgetItem(file_item);
             int row = in_file.first;
             item->setText(0, QString("at ") + QString::number(row) + my_functions::add_suffix(row) + QString(" row"));
+            item->setText(1, QString::number(in_file.second.size()) + QString(" matches"));
             for (auto index : in_file.second) {
                 auto *item_child = new QTreeWidgetItem(item);
                 item_child->setText(0, "pos: " + QString::number(index));
             }
+            matches += in_file.second.size();
         }
+        file_item->setText(1, QString::number(matches) + QString(" matches"));
         ui->treeWidget->addTopLevelItem(file_item);
     }
 }
@@ -389,12 +395,12 @@ void subStringFinder::start_indexing(QString dir) {
 }
 
 void subStringFinder::add_dir() {
-    //check if cancelled
     ui->indexBar->setValue(0);
-    ui->indexStopButton->setEnabled(true);
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory for Scanning"),
                                                     QString(),
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (dir == "") { return; }
+    ui->indexStopButton->setEnabled(true);
 
     tmp_trigram_list.clear();
     is_indexing = true;
@@ -404,7 +410,7 @@ void subStringFinder::add_dir() {
 
 void subStringFinder::add_path() {
     QString path = QFileDialog::getOpenFileName(this, tr("Select file where to find substring"));
-
+    if (path == "") { return; }
     size_t last_size = _filesTrigrams.size();
     try {
         _filesTrigrams.emplace(path.toStdString());

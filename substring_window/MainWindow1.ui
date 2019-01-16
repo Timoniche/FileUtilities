@@ -169,12 +169,12 @@
              <widget class="QTreeWidget" name="treeWidget">
               <column>
                <property name="text">
-                <string notr="true">file_name</string>
+                <string notr="true">Filename</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>number_of_matches</string>
+                <string>Number of matches</string>
                </property>
               </column>
              </widget>
@@ -231,13 +231,13 @@
    </property>
    <widget class="QMenu" name="menupreferences">
     <property name="title">
-     <string>preferences</string>
+     <string>Preferences</string>
     </property>
     <addaction name="actionchoose_filters"/>
    </widget>
    <widget class="QMenu" name="menuindexing">
     <property name="title">
-     <string>indexing</string>
+     <string>Indexing</string>
     </property>
     <addaction name="action_open_dir"/>
     <addaction name="action_open_file"/>
@@ -266,12 +266,12 @@
   </action>
   <action name="action_open_dir">
    <property name="text">
-    <string>_open_dir</string>
+    <string>open dir</string>
    </property>
   </action>
   <action name="action_open_file">
    <property name="text">
-    <string>_open_file</string>
+    <string>open file</string>
    </property>
   </action>
  </widget>
