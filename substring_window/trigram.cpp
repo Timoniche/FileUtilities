@@ -27,7 +27,7 @@ FilesTrigram::FilesTrigram(std::string const &file_name) :
     }
 }
 
-FilesTrigram::FilesTrigram(std::string const &file_name, std::atomic_bool *indexing) :
+FilesTrigram::FilesTrigram(std::string const &file_name, std::atomic_bool const *indexing) :
         _file_name(file_name),
         _indexing(indexing) {
     std::ifstream stream(_file_name);
@@ -58,7 +58,7 @@ FilesTrigram::FilesTrigram(std::string const &file_name, std::atomic_bool *index
 FilesTrigram::~FilesTrigram() = default;
 
 //Pre: size [3; BUFFER_LINE_SIZE]
-void FilesTrigram::splitStringToTrigram(std::string const &s, std::set<uint32_t> &trSet, std::atomic_bool *_indexing) {
+void FilesTrigram::splitStringToTrigram(std::string const &s, std::set<uint32_t> &trSet, std::atomic_bool const *_indexing) {
     //string to utf8?
     //QString qs = QString::fromStdString(s);
     //qs.toUtf8().constData();

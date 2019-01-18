@@ -12,9 +12,9 @@ public:
 
     FilesTrigram();
 
-    FilesTrigram(std::string const &file_name);
+    explicit FilesTrigram(std::string const &file_name);
 
-    FilesTrigram(std::string const &file_name, std::atomic_bool *indexing);
+    FilesTrigram(std::string const &file_name, std::atomic_bool const *indexing);
 
     ~FilesTrigram();
 
@@ -38,7 +38,7 @@ public:
     bool hasTrigrams(std::set<uint32_t> const &text_trigrams);
 
     static void
-    splitStringToTrigram(std::string const &s, std::set<uint32_t> &trSet, std::atomic_bool *_indexing = nullptr);
+    splitStringToTrigram(std::string const &s, std::set<uint32_t> &trSet, std::atomic_bool const *_indexing = nullptr);
 
 public:
     bool isValid = true;
