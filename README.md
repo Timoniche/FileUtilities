@@ -11,11 +11,7 @@ FileUtilities — программа для нахождения дублика�
  - fsutil file createnew temp_10GB_file 10000000000 (Windows)
  - mkfile -n 10g temp_10GB_file (Mac OS)
  
-### Сборка `cmake`'ом (!) 
-
-нужно заменить:
-//#include "ui_MainWindow1.h"
-#include "substring_window/ui_MainWindow1.h"
+### Сборка `cmake`'ом 
 
     $ cmake -DCMAKE_BUILD_TYPE=Debug .
     $ make
