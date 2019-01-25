@@ -352,7 +352,7 @@ void subStringFinder::indexing_has_finished(QString dir) {
     ui->indexStopButton->setEnabled(false);
     size_t cur_size = _filesTrigrams.size();
 
-    for (auto u : tmp_trigram_list) {
+    for (auto &u : tmp_trigram_list) {
         if (u.isValid) {
             fsWatcher->addPath(u.get_qstring_name());
             _filesTrigrams.insert(std::move(u));

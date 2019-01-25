@@ -76,6 +76,7 @@ void substring_finder::process_impl(std::string const &pattern,
     }
     catch (std::exception &ex) {
         emit error(ex.what());
+        return;
     }
     emit finished();
 }
