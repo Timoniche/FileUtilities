@@ -15,6 +15,12 @@ private slots:
 
     void go();
 
+signals:
+    void enter_pressed();
+
+protected:
+    void keyPressEvent(QKeyEvent *event) override;
+
 public:
     explicit welcome_window(QWidget *parent = nullptr);
 

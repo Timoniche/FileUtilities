@@ -19,6 +19,8 @@
 #include <QtCore/QThread>
 #include <QTextStream>
 #include <QTime>
+#include <QGuiApplication>
+#include <QScreen>
 
 
 main_window::main_window(QWidget *parent) :
@@ -30,20 +32,25 @@ main_window::main_window(QWidget *parent) :
 
     setWindowTitle("File Copies");
     ui->progressBar->setValue(0);
-    setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
-                                    qApp->desktop()->availableGeometry())); //NOLINT
+
+    setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            this->size(),
+            qApp->desktop()->availableGeometry()
+        )
+    );
 
     ui->treeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     ui->treeWidget->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 
     ui->treeWidget->setUniformRowHeights(true);
     ui->treeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
-
     QCommonStyle style;
     ui->actionScan_Directory->setIcon(style.standardIcon(QCommonStyle::SP_DialogOpenButton));
     ui->actionExit->setIcon(style.standardIcon(QCommonStyle::SP_DialogCloseButton));
     ui->actionAbout->setIcon(style.standardIcon(QCommonStyle::SP_DialogHelpButton));
-
     ui->buttonStop->setIcon(style.standardIcon(QCommonStyle::SP_MediaStop));
     ui->continueButton->setIcon(style.standardIcon(QCommonStyle::SP_MediaPlay));
     ui->pauseButton->setIcon(style.standardIcon(QCommonStyle::SP_MediaPause));

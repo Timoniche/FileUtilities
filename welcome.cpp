@@ -11,18 +11,23 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <QGuiApplication>
+#include <QScreen>
 
 welcome_window::welcome_window(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::welcomeWindow) {
     ui->setupUi(this);
-
-    //setStyleSheet("background-image: url(.images/welcome.jpg)");
-
     setWindowTitle("Welcome");
-    setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(),
-                                    qApp->desktop()->availableGeometry()));
-
+    setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            this->size(),
+            qApp->desktop()->availableGeometry()
+        )
+    );
+    setFocusPolicy(Qt::ClickFocus);
     QPixmap bkgnd(":/images/welcome.jpg");
     bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
     QPalette palette;
@@ -30,9 +35,16 @@ welcome_window::welcome_window(QWidget *parent) :
     this->setPalette(palette);
     this->setFixedSize(this->width(), this->height());
     connect(ui->pushButton, &QPushButton::clicked, this, &welcome_window::go);
+    connect(this, SIGNAL(enter_pressed()), this, SLOT(go()));
 }
 
 welcome_window::~welcome_window() = default;
+
+void welcome_window::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+        emit enter_pressed();
+    }
+}
 
 void welcome_window::go() {
     int curIndex = ui->comboBox->currentIndex();

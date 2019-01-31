@@ -1,10 +1,22 @@
 #include "filtersDialog.h"
 #include "ui_filtersDialog.h"
 
+#include <QStyle>
+#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
+
 filtersDialog::filtersDialog(QWidget *parent) :
         QDialog(parent),
         ui(new Ui::Filters) {
     ui->setupUi(this);
+    setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            this->size(),
+            qApp->desktop()->availableGeometry())
+    );
     connect(ui->chooseAll, SIGNAL(stateChanged(int)), this, SLOT(choose_all(int)));
     connect(ui->resetAll, SIGNAL(stateChanged(int)), this, SLOT(reset_all(int)));
 }

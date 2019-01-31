@@ -17,6 +17,9 @@
 #include "my_functions.h"
 #include <functional>
 #include <QCommonStyle>
+#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 //#include <boost/tokenizer.hpp>
 
 
@@ -30,38 +33,39 @@ subStringFinder::subStringFinder(QWidget *parent) :
     ui->setupUi(this);
     filtersWindow->setWindowModality(Qt::WindowModality::WindowModal);
     setWindowTitle("substring finder");
-
     ui->treeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     ui->treeWidget->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-    //ui->splitter->setStretchFactor(0, 2);
-    //ui->splitter_2->setStretchFactor(1, 2);
     ui->progressBar->setValue(0);
     ui->indexBar->setValue(0);
     ui->treeWidget->setUniformRowHeights(true);
     ui->treeWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 
-    ui->fileList->setSelectionMode(QAbstractItemView::MultiSelection);
+    setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            this->size(),
+            qApp->desktop()->availableGeometry()
+        )
+    );
 
+    ui->fileList->setSelectionMode(QAbstractItemView::MultiSelection);
     QCommonStyle style;
     ui->stopButton->setIcon(style.standardIcon(QCommonStyle::SP_MediaStop));
     ui->continueButton->setIcon(style.standardIcon(QCommonStyle::SP_MediaPlay));
     ui->pauseButton->setIcon(style.standardIcon(QCommonStyle::SP_MediaPause));
     ui->action_open_dir->setIcon(style.standardIcon(QCommonStyle::SP_DialogOpenButton));
-    ui->action_open_file->setIcon(style.standardIcon(QCommonStyle::SP_FileIcon));
-
+    ui->action_open_file->setIcon(style.standardIcon(QCommonStyle::SP_FileIcon));  
     connect(ui->action_open_file, &QAction::triggered, this, &subStringFinder::add_path);
     connect(ui->searchButton, &QPushButton::clicked, this, &subStringFinder::search);
     connect(ui->action_open_dir, &QAction::triggered, this, &subStringFinder::add_dir);
     connect(ui->expandButton, &QPushButton::clicked, this, &subStringFinder::expand);
     connect(ui->collapseButton, &QPushButton::clicked, this, &subStringFinder::collapse);
     connect(ui->removeButton, &QPushButton::clicked, this, &subStringFinder::remove_selected);
-    //write which thread
     connect(ui->pauseButton, &QPushButton::clicked, this, &subStringFinder::pause_thread);
     connect(ui->continueButton, &QPushButton::clicked, this, &subStringFinder::restart_thread);
     connect(ui->stopButton, &QPushButton::clicked, this, &subStringFinder::interrupt_thread);
-
     connect(ui->actionchoose_filters, &QAction::triggered, this, &subStringFinder::show_filters);
-
     connect(ui->lineEdit, SIGNAL(textChanged(
                                          const QString &)), this, SLOT(pattern_updated(
                                                                                const QString &)));
